@@ -1,35 +1,35 @@
-const cool = require('cool-ascii-faces')
+const cool = require("cool-ascii-faces");
 
-const express = require('express')
+const express = require("express");
 
-const path = require('path')
+const path = require("path");
 
-const PORT = process.env.PORT || 5000
+const PORT = process.env.PORT || 5000;
 
-const WebSocket = require('ws');
- 
+const WebSocket = require("ws");
+
 const wss = new WebSocket.Server({ port: 8080 });
 
 express()
-  .use(express.static(path.join(__dirname, 'public')))
-  .set('views', path.join(__dirname, 'views'))
-  .set('view engine', 'ejs')
-  .get('/', (req, res) => res.render('pages/index'))
-  .get('/cool', (req,res) => res.send (cool ()))
-  .get('/times', (req, res) => {
-    let result = ''
-    const times = process.env.TIMES || 5
+  .use(express.static(path.join(__dirname, "public")))
+  .set("views", path.join(__dirname, "views"))
+  .set("view engine", "ejs")
+  .get("/", (req, res) => res.render("pages/index"))
+  .get("/cool", (req, res) => res.send(cool()))
+  .get("/times", (req, res) => {
+    let result = "";
+    const times = process.env.TIMES || 5;
     for (i = 0; i < times; i++) {
-      result += i + ' '
+      result += i + " ";
     }
-    res.send(result)
+    res.send(result);
   })
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
+  .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-wss.on('connection', function connection(ws) {
-  ws.on('message', function incoming(message) {
-    console.log('received: %s', message);
+wss.on("connection", function connection(ws) {
+  ws.on("message", function incoming(message) {
+    console.log("received: %s", message);
   });
- 
-  ws.send('something');
+
+  ws.send("something");
 });
