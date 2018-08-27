@@ -12,7 +12,6 @@ express()
   .set('view engine', 'ejs')
   .get('/', (req, res) => res.render('pages/index'))
   .get('/cool', (req,res) => res.send (cool ()))
-  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
   .get('/times', (req, res) => {
     let result = ''
     const times = process.env.TIMES || 5
@@ -20,4 +19,5 @@ express()
       result += i + ' '
     }
     res.send(result)
-  });
+  })
+  .listen(PORT, () => console.log(`Listening on ${ PORT }`))
