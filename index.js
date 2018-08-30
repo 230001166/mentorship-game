@@ -3,6 +3,7 @@ const express = require("express");
 const path = require("path");
 const PORT = process.env.PORT || 5000;
 const WebSocket = require("ws");
+const wss = new WebSocket.Server ({ port: 8080});
 
 const server = express()
   .use(express.static(path.join(__dirname, "public")))
@@ -20,8 +21,6 @@ const server = express()
   })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-const wss = new WebSocket.Server ({ port: 8080});
-
 wss.on("connection", function connection(ws) {
   ws.on("message", function incoming(message) {
 
@@ -34,17 +33,7 @@ wss.on("connection", function connection(ws) {
     console.log("received: %s", message);
   });
 
-  ws.on("close", function() {
-    console.log("websocket connection close")
-    clearInterval(id)
-  })
-
   ws.send("something");
 });
 
-setInterval(() => {
-  wss.clients.forEach((client) => {
-    client.send(new Date().toTimeString());
-  });
-}, 1000);
 
