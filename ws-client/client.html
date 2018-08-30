@@ -4,22 +4,33 @@
 <head>
   <meta charset="UTF-8">
   <title>title</title>
-  <link rel="stylesheet" href="//fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
-  <link rel="stylesheet" href="stylesheet.css" type="text/css">
+  <!-- <link rel="stylesheet" href="http://fonts.googleapis.com/css?family=font1|font2|etc" type="text/css">
+  <link rel="stylesheet" href="stylesheet.css" type="text/css"> -->
 </head>
 
 <body>
 
-  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
-  <script src="//cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js" type="text/javascript"></script>
+  <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js" type="text/javascript"></script>
+  <script src="http://cdnjs.cloudflare.com/ajax/libs/modernizr/2.5.3/modernizr.min.js" type="text/javascript"></script>
   <script type="text/javascript">
-    function autorun() {
-      const socket = new WebSocket('ws://evening-peak-87594.herokuapp.com:8080');
 
-      // Connection opened
+    function autorun() {
+
+        
+      const socket = new WebSocket('ws://66.170.233.81:8080');
+
       socket.addEventListener('open', function (event) {
+
+        console.log('open!');
+
         socket.send('Hello Server!');
+
+        socket.send('hello from not dorian');
       });
+
+      socket.onerror = function (event) {
+        console.error("WebSocket error observed:", event);
+      };
 
       // Listen for messages
       socket.addEventListener('message', function (event) {
