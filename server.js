@@ -17,8 +17,8 @@ const CLIENTS = [];
 
 wss.on('connection', function connection (ws, req) {
   CLIENTS.push (ws);
-  console.log('Client ' + CLIENTS [CLIENTS.length - 1] + ' connected');
-  ws.on('close', () => console.log('Client ' + CLIENTS [CLIENTS.length - 1] + ' disconnected'));
+  console.log('Client ' + JSON.stringify(CLIENTS [CLIENTS.length - 1]) + ' connected');
+  ws.on('close', () => console.log('Client ' + JSON.stringify(CLIENTS [CLIENTS.length - 1]) + ' disconnected'));
 });
 
 setInterval(() => {
