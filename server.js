@@ -15,7 +15,7 @@ const wss = new SocketServer({ server, clientTracking:true });
 
 
 wss.on('connection', function connection (ws, req) {
-  let clientArray = Array.from(wss.clients.values());
+  let clientArray = Array.from(wss.clients.prototype.values());
   console.log('Client ' + clientArray[wss.clients.size-1] + ' connected');
   ws.on('close', () => console.log('Client ' + clientArray[wss.clients.size-1]  + ' disconnected'));
 });
