@@ -26,9 +26,6 @@ express()
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
 
-const WebSocket = require("ws");
-
-const wss = new WebSocket.Server({ port: 8080 });
 
 wss.on("connection", function connection(ws) {
   ws.on("message", function incoming(message) {
@@ -38,10 +35,6 @@ wss.on("connection", function connection(ws) {
         client.send('data');
       }
     });
-
-wss.on("connection", function connection(ws) {
-  ws.on("message", function incoming(message) {
-    console.log("received: %s", message);
 
   });
 
