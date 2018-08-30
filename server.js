@@ -13,9 +13,10 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
-wss.on('connection', (ws) => {
-  console.log('Client connected');
-  ws.on('close', () => console.log('Client disconnected'));
+wss.on('connection', (ws, req) => {
+  const ip = req.connection.remoteAddress;
+  console.log('Client from IP ' + ip + ' connected');
+  ws.on('close', () => console.log('Client from IP ' + ip + ' disconnected'));
 });
 
 setInterval(() => {
