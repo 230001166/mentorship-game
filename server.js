@@ -13,11 +13,12 @@ const server = express()
 
 const wss = new SocketServer({ server, clientTracking:true });
 
+const CLIENTS = [];
 
 wss.on('connection', function connection (ws, req) {
-  let clientArray = Array.from(wss.clients.prototype.values());
-  console.log('Client ' + clientArray[wss.clients.size-1] + ' connected');
-  ws.on('close', () => console.log('Client ' + clientArray[wss.clients.size-1]  + ' disconnected'));
+  CLIENTS.push (ws);
+  console.log('Client ' + CLIENTS [CLIENTS.length - 1] + ' connected');
+  ws.on('close', () => console.log('Client ' + CLIENTS [CLIENTS.length - 1] + ' disconnected'));
 });
 
 setInterval(() => {
