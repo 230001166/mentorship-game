@@ -13,7 +13,7 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
-wss.on('connection', (ws, req) => {
+wss.on('connection', function connection (ws, req) {
   const ip = req.connection.remoteAddress;
   console.log('Client from IP ' + ip + ' connected');
   ws.on('close', () => console.log('Client from IP ' + ip + ' disconnected'));
