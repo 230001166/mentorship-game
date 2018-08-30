@@ -20,7 +20,7 @@ const server = express()
   })
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-const wss = new WebSocket.Server ({ server});
+const wss = new WebSocket.Server ({ port: 8080});
 
 wss.on("connection", function connection(ws) {
   ws.on("message", function incoming(message) {
