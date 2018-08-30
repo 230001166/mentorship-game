@@ -13,13 +13,11 @@ const server = express()
 
 const wss = new SocketServer({ server });
 
-let randomClientNames = ["Strawberry","Kiwi","Apple","Pear","Orange"];
 
 wss.on('connection', function connection (ws, req) {
-  let randomIndex = Math.floor(Math.random() * Math.floor(randomClientNames.length));
-
-  console.log('Client ' + randomClientNames [randomIndex] + ' connected');
-  ws.on('close', () => console.log('Client ' + randomClientNames [randomIndex]  + ' disconnected'));
+  let clientArray = Array.from(wss.clients.values ());
+  console.log('Client ' + clientArray[wss.clients.size-1] + ' connected');
+  ws.on('close', () => console.log('Client ' + wss.clients[wss.clients.size]  + ' disconnected'));
 });
 
 setInterval(() => {
