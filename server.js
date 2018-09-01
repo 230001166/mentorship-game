@@ -38,11 +38,6 @@ wss.on("connection", function connection(ws, req) {
   ws.username = prompt("Please enter a username.", "Generic Name 2.0");
   CLIENTS.push(ws);
   console.log("Client " + ws.username + " connected");
-  let userConnectionData = {
-    type: "connection",
-    username: ws.username
-  };
-  client.send(userConnectionData);
 
   ws.on("close", () =>
     console.log(
@@ -55,11 +50,7 @@ wss.on("connection", function connection(ws, req) {
 
 setInterval(() => {
   wss.clients.forEach(client => {
-    let dateTimeData = {
-      type: "date",
-      date: new Date().toTimeString()
-    };
 
-    client.send(dateTimeData);
+    client.send(new Date().toTimeString());
   });
 }, 1000);

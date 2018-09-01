@@ -24,15 +24,8 @@
     var el = document.getElementById('server-time');
     ws.onmessage = function (event) {
 
-      if (event.data.type === "date") {
-
         el.innerHTML = 'Server time: ' + event.data.date;
 
-      } else if (event.data.type === "connection") {
-
-        serverMessage.innerHTML = event.data.username + ' connected to the server.';
-
-      }
     };
   </script>
   <style>
