@@ -13,15 +13,26 @@
   <p id='minimap-desc'>MINIMAP</p>
 
   <p id='console'>You wake up in an unfamiliar place, remembering nothing but your name. Up ahead lies a great statue, of
-    what you aren't sure. To your right is a clay brick wall, and to your left you hear some monster lurking about. Behind you lies another wall.</p>
+    what you aren't sure. To your right is a clay brick wall, and to your left you hear some monster lurking about. Behind
+    you lies another wall.</p>
 
   <p id='server-time'>No messages from server yet.</p>
+  <p id='server-message'></p>
   <script>
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
     var el = document.getElementById('server-time');
     ws.onmessage = function (event) {
-      el.innerHTML = 'Server time: ' + event.data;
+
+      if (event.data.type === "date") {
+
+        el.innerHTML = 'Server time: ' + event.data.date;
+
+      } else if (event.data.type === "connection") {
+
+        serverMessage.innerHTML = event.data.username + ' connected to the server.';
+
+      }
     };
   </script>
   <style>
@@ -35,7 +46,7 @@
       font-size: 48px;
       text-align: right;
       border-bottom: 6px solid #c88888;
-      margin:0px;
+      margin: 0px;
     }
 
     #minimap-desc {
@@ -78,7 +89,7 @@
       font-size: 24px;
       text-align: justify;
       padding: 24px;
-      margin:0px;
+      margin: 0px;
     }
 
     #server-time {
@@ -86,6 +97,14 @@
       position: absolute;
       top: 90%;
       left: 1%;
+      margin: 0px;
+    }
+
+    #server-message {
+      font-size: 24px;
+      position: absolute;
+      top: 90%;
+      left: 60%;
     }
 
     body {
