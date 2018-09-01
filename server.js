@@ -35,9 +35,8 @@ const getCircularReplacer = () => {
 };
 
 wss.on("connection", function connection(ws, req) {
-  ws.username = prompt("Please enter a username.", "Generic Name 2.0");
   CLIENTS.push(ws);
-  console.log("Client " + ws.username + " connected");
+  console.log("Client " + JSON.stringify(CLIENTS[CLIENTS.length - 1], getCircularReplacer()) + " connected");
 
   ws.on("close", () =>
     console.log(
