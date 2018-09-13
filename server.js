@@ -52,8 +52,8 @@ setInterval(() => {
 
     let message = {
 
-      messageType = 'DATE',
-      date = new Date().toTimeString()
+      messageType: 'DATE',
+      date: new Date().toTimeString()
 
     };
 
