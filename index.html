@@ -24,7 +24,7 @@
     var el = document.getElementById('server-time');
     ws.onmessage = function (event) {
 
-      let message = event.data;
+      let message = JSON.parse (event.data);
 
         if (message.messageType === "DATE") {
           

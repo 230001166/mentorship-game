@@ -57,6 +57,6 @@ setInterval(() => {
 
     };
 
-    client.send(message);
+    client.send(JSON.stringify (message));
   });
 }, 1000);
