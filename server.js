@@ -695,12 +695,14 @@ wss.on("connection", function connection(ws, req) {
 
     createGame ();
 
-    let message = {
-      messageType: "NAME",
-      name: games [0].players [0].name
-    }
-
-    client.send(JSON.stringify(message));
+    wss.clients.forEach(client => {
+      let message = {
+        messageType: "NAME",
+        name: games [0].players [0].name
+      }
+  
+      client.send(JSON.stringify(message));
+    });
 
   }
 
