@@ -676,19 +676,6 @@ function createGame() {
   games.push(worldData);
 }
 
-const getCircularReplacer = () => {
-  const seen = new WeakSet();
-  return (key, value) => {
-    if (typeof value === "object" && value !== null) {
-      if (seen.has(value)) {
-        return;
-      }
-      seen.add(value);
-    }
-    return value;
-  };
-};
-
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
   if (games.length === 0) {
@@ -701,16 +688,30 @@ wss.on("connection", function connection(ws, req) {
         name: games [0].players [0].name
       }
   
-      client.send(JSON.stringify(message));
+      client.send(JSON.stringify(message)); console.log ("Creating new game");
     });
+
+  } else {
+
+    let playername = gameData.randomPlayerNames[randomIndex];
+    let player = createPlayer(playername, 45, 10, 15, 10, 10, 5, 2, 2);
+
+    assignPlayerTraits(player);
+
+    games [0].players.push(player);
+
+    let message = {
+      messageType: "NAME",
+      name: games [0].players.length-1
+    }
+
+    client.send(JSON.stringify(message)); console.log ("Joining game");
 
   }
 
   ws.on("close", () =>
     console.log(
-      "Client " +
-        JSON.stringify(CLIENTS[CLIENTS.length - 1], getCircularReplacer()) +
-        " disconnected"
+      "Client disconnected"
     )
   );
 });
