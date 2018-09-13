@@ -540,7 +540,6 @@ function tileIsSurroundedByWalls(worldData, row, col) {
 }
 
 function generateFloor(worldData, floorLevel, seed) {
-  Math.seedrandom(seed);
   if (floorLevel <= 3) {
     for (let i = 0; i < 25; i++) {
       /// 5 x 5 tilemap, generate 25 tiles
