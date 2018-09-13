@@ -30,6 +30,10 @@
           
           el.innerHTML = 'Server time: ' + message.date;
 
+        } else if (message.messageType === "NAME") {
+
+          el.innerHTML = message.name;
+
         }
 
     };
