@@ -50,6 +50,13 @@ wss.on("connection", function connection(ws, req) {
 setInterval(() => {
   wss.clients.forEach(client => {
 
-    client.send(new Date().toTimeString());
+    let message = {
+
+      messageType = 'DATE',
+      date = new Date().toTimeString()
+
+    };
+
+    client.send(message);
   });
 }, 1000);

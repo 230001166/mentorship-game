@@ -24,7 +24,13 @@
     var el = document.getElementById('server-time');
     ws.onmessage = function (event) {
 
-        el.innerHTML = 'Server time: ' + event.data;
+      let message = event.data;
+
+        if (message.messageType === "DATE") {
+          
+          el.innerHTML = 'Server time: ' + message.date;
+
+        }
 
     };
   </script>
