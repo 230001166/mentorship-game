@@ -13,6 +13,7 @@
   "license": "ISC",
   "dependencies": {
     "express": "4.13.4",
+    "npm": "^6.4.1",
     "ws": "1.1.0"
   },
   "devDependencies": {},
