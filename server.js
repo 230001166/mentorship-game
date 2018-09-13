@@ -693,6 +693,9 @@ wss.on("connection", function connection(ws, req) {
 
   } else {
 
+    let randomIndex = Math.floor(
+      Math.random() * Math.floor(gameData.randomPlayerNames.length)
+    );
     let playername = gameData.randomPlayerNames[randomIndex];
     let player = createPlayer(playername, 45, 10, 15, 10, 10, 5, 2, 2);
 
