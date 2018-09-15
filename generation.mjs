@@ -268,7 +268,7 @@ function generateWorld(worldData, numberOfPlayers, seed) {
   generateFloor(worldData, 1, seed);
 }
 
-export function createGame (games, worldData) {
+export function createGame (games) {
   let worldData = { players: [], enemies: [], worldItems: [], worldMap: [] };
 
   generateWorld(worldData, 1, Math.floor(Math.random() * 1000));

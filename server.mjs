@@ -407,7 +407,7 @@ wss.on("connection", function connection(ws, req) {
 
   if (games.length === 0) {
 
-    createGame ();
+    createGame (games);
 
     wss.clients.forEach(client => {
       let message = {
