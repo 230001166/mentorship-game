@@ -287,7 +287,7 @@ function generateWorld(worldData, numberOfPlayers, seed) {
   generateFloor(worldData, 1, seed);
 }
 
-function createGame(games) {
+function createGame() {
   let worldData = { players: [], enemies: [], worldItems: [], worldMap: [] };
 
   generateWorld(worldData, 1, Math.floor(Math.random() * 1000));
