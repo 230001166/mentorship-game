@@ -9,14 +9,13 @@
 </head>
 
 <body>
-  <div id='tile-minimap'></div>
-  <p id='minimap-desc'>MINIMAP</p>
 
   <p id='console'>You wake up in an unfamiliar place, remembering nothing but your name. Up ahead lies a great statue, of
     what you aren't sure. To your right is a clay brick wall, and to your left you hear some monster lurking about. Behind
     you lies another wall.</p>
 
   <p id='server-time'>No messages from server yet.</p>
+  <p id='status'>Player HP 56 MANA 1 STAMINA 10 STRENGTH 11 DEFENSE 7 CRITICAL 3 EXPERIENCE 1562</p>
   <p id='server-message'></p>
   <script>
     var HOST = location.origin.replace(/^http/, 'ws')
@@ -52,35 +51,9 @@
       margin: 0px;
     }
 
-    #minimap-desc {
-      font-size: 16px;
-      position: absolute;
-      top: 450px;
-      left: 1%;
-      width: 100px;
-      height: 30px;
-      text-align: center;
-      background-color: #242424;
-      border-style: solid;
-      border-color: #888888;
-      margin: 0px;
-    }
-
-    #tile-minimap {
-      position: absolute;
-      top: 350px;
-      left: 1%;
-      width: 100px;
-      height: 100px;
-      background-color: #242424;
-      border-style: solid;
-      border-color: #888888;
-      margin: 0px;
-    }
-
     #console {
       position: absolute;
-      top: 30%;
+      top: 20%;
       left: 10%;
       width: 80%;
       height: 50%;
@@ -93,6 +66,17 @@
       text-align: justify;
       padding: 24px;
       margin: 0px;
+    }
+
+    #status {
+      position: absolute;
+      top: 78%;
+      left: 10%;
+      width: 80%;
+      height: 15%;
+      margin: 0px;
+      font-size: 20px;
+      margin: 0px;     
     }
 
     #server-time {

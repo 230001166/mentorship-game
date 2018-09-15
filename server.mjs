@@ -13,6 +13,11 @@ const server = express()
 
 const wss = new SocketServer({ server, clientTracking: true });
 
+import {createPlayer} from './generation.mjs';
+import {assignPlayerTraits} from './generation.mjs';
+import {createGame} from './generation.mjs';
+
+
 const CLIENTS = [];
 
 let games = [];
