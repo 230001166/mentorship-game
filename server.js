@@ -17,6 +17,284 @@ const CLIENTS = [];
 
 let games = [];
 
+function createPlayer(
+  name,
+  health,
+  mana,
+  stamina,
+  strength,
+  defense,
+  criticalChance,
+  positionRow,
+  positionCol
+) {
+  return {
+    name,
+    health,
+    maxHealth: health,
+    mana,
+    maxMana: mana,
+    stamina,
+    maxStamina: stamina,
+    strength,
+    defense,
+    criticalChance,
+    positionRow,
+    positionCol
+  };
+}
+
+function traitIsNotIncompatible(player, traitIndex) {
+  for (
+    let i = 0;
+    i < gameData.positiveTraits[traitIndex].incompatibleTraits.length;
+    i++
+  ) {
+    if (
+      gameData.positiveTraits[traitIndex].incompatibleTraits[i] ==
+      player.negativeTrait.name
+    ) {
+      return false;
+    }
+  }
+
+  return true;
+}
+
+function assignPlayerTraits(player) {
+  const NEGATIVE_TRAITS = 5,
+    POSITIVE_TRAITS = 6;
+
+  let randomNumber = Math.floor(Math.random() * Math.floor(NEGATIVE_TRAITS));
+
+  player.negativeTrait = gameData.negativeTraits[randomNumber];
+
+  let positiveTraitIsValid = false;
+
+  while (!positiveTraitIsValid) {
+    randomNumber = Math.floor(Math.random() * Math.floor(POSITIVE_TRAITS));
+
+    if (traitIsNotIncompatible(player, randomNumber)) {
+      player.positiveTrait = gameData.positiveTraits[randomNumber];
+      positiveTraitIsValid = true;
+    }
+  }
+}
+
+function isEmptySpaceClump(worldData, row, col) {
+  let emptySpaceClumpExists = false,
+    emptySpaces = 0;
+
+  if (row >= 0 && row < 4 && col >= 0 && col < 4) {
+    if (worldData.worldMap[row + col * 5].identifier === "emptyroom") {
+      emptySpaces++;
+    }
+    if (worldData.worldMap[row + 1 + col * 5].identifier === "emptyroom") {
+      emptySpaces++;
+    }
+    if (worldData.worldMap[row + (col + 1) * 5].identifier === "emptyroom") {
+      emptySpaces++;
+    }
+    if (
+      worldData.worldMap[row + 1 + (col + 1) * 5].identifier === "emptyroom"
+    ) {
+      emptySpaces++;
+    }
+
+    if (emptySpaces >= 3) {
+      emptySpaceClumpExists = true;
+    }
+  }
+
+  return emptySpaceClumpExists;
+}
+
+function removingTileIsNotValid(worldData, row, col) {
+  let emptySpaceClumpExists = false;
+
+  for (let i = -1; i < 1; i++) {
+    for (let j = -1; j < 1; j++) {
+      if (isEmptySpaceClump(worldData, row + i, col + j)) {
+        emptySpaceClumpExists = true;
+      }
+    }
+  }
+
+  return emptySpaceClumpExists;
+}
+
+function tileIsSurroundedByWalls(worldData, row, col) {
+  let surroundingTiles = 0;
+
+  if (
+    row - 1 < 0 ||
+    worldData.worldMap[row - 1 + col * 5].identifier === "wall"
+  ) {
+    surroundingTiles++;
+  }
+  if (
+    row + 1 > 4 ||
+    worldData.worldMap[row + 1 + col * 5].identifier === "wall"
+  ) {
+    surroundingTiles++;
+  }
+  if (
+    col - 1 < 0 ||
+    worldData.worldMap[row + (col - 1) * 5].identifier === "wall"
+  ) {
+    surroundingTiles++;
+  }
+  if (
+    col + 1 > 4 ||
+    worldData.worldMap[row + (col + 1) * 5].identifier === "wall"
+  ) {
+    surroundingTiles++;
+  }
+
+  if (surroundingTiles === 4) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+function generateFloor(worldData, floorLevel, seed) {
+  if (floorLevel <= 3) {
+    for (let i = 0; i < 25; i++) {
+      /// 5 x 5 tilemap, generate 25 tiles
+
+      let tile = {
+        identifier: "wall",
+        position: { row: i % 5, col: Math.floor(i / 5) }
+      };
+
+      worldData.worldMap.push(tile);
+    }
+
+    let centerRow = 2,
+      centerCol = 2;
+
+    worldData.worldMap[centerRow + centerCol * 5].identifier = "emptyroom";
+
+    let wallClumpsRemain = true;
+    while (wallClumpsRemain) {
+      console.log("branching...");
+      for (let a = 0; a < 2; a++) {
+        let x = 0,
+          y = 0,
+          positionIsValid = false;
+
+        while (!positionIsValid) {
+          x = Math.floor(Math.random() * Math.floor(5));
+          y = Math.floor(Math.random() * Math.floor(5));
+
+          if (worldData.worldMap[x + y * 5].identifier === "emptyroom") {
+            positionIsValid = true;
+          }
+        }
+
+        let xOffset = 0,
+          yOffset = 0;
+
+        while (xOffset == 0 || (x + xOffset < 0 || x + xOffset > 4)) {
+          xOffset = Math.floor(Math.random() * Math.floor(5)) - 2;
+        }
+        while (yOffset == 0 || (y + yOffset < 0 || y + yOffset > 4)) {
+          yOffset = Math.floor(Math.random() * Math.floor(5)) - 2;
+        }
+
+        for (let i = 0; i < Math.abs(xOffset); i++) {
+          if (
+            xOffset < 0 &&
+            x - i >= 0 &&
+            !removingTileIsNotValid(worldData, x - (i + 1), y) &&
+            !tileIsSurroundedByWalls(worldData, x - (i + 1), y)
+          ) {
+            worldData.worldMap[x - (i + 1) + y * 5].identifier = "emptyroom";
+          }
+
+          if (
+            xOffset > 0 &&
+            x + i <= 4 &&
+            !removingTileIsNotValid(worldData, x + i + 1, y) &&
+            !tileIsSurroundedByWalls(worldData, x + i + 1, y)
+          ) {
+            worldData.worldMap[x + i + 1 + y * 5].identifier = "emptyroom";
+          }
+        }
+
+        for (let i = 0; i < Math.abs(yOffset); i++) {
+          if (
+            yOffset < 0 &&
+            y - i >= 0 &&
+            !removingTileIsNotValid(worldData, x, y - (i + 1)) &&
+            !tileIsSurroundedByWalls(worldData, x, y - (i + 1))
+          ) {
+            worldData.worldMap[x + (y - (i + 1)) * 5].identifier = "emptyroom";
+          }
+
+          if (
+            yOffset > 0 &&
+            y + i <= 4 &&
+            !removingTileIsNotValid(worldData, x, y + i + 1) &&
+            !tileIsSurroundedByWalls(worldData, x, y + i + 1)
+          ) {
+            worldData.worldMap[x + (y + i + 1) * 5].identifier = "emptyroom";
+          }
+        }
+      }
+
+      wallClumpsRemain = false;
+
+      for (let i = 0; i < 4; i++) {
+        for (let j = 0; j < 4; j++) {
+          if (
+            worldData.worldMap[i + j * 5].identifier === "wall" &&
+            worldData.worldMap[i + 1 + j * 5].identifier === "wall" &&
+            worldData.worldMap[i + (j + 1) * 5].identifier === "wall" &&
+            worldData.worldMap[i + 1 + (j + 1) * 5].identifier === "wall"
+          ) {
+            wallClumpsRemain = true;
+          }
+        }
+      }
+    }
+  }
+}
+
+function generateWorld(worldData, numberOfPlayers, seed) {
+  for (let i = 0; i < numberOfPlayers; i++) {
+    let randomIndex = Math.floor(
+      Math.random() * Math.floor(gameData.randomPlayerNames.length)
+    );
+    let playername = gameData.randomPlayerNames[randomIndex];
+    let player = createPlayer(playername, 45, 10, 15, 10, 10, 5, 2, 2);
+
+    assignPlayerTraits(player);
+
+    worldData.players.push(player);
+
+    console.log(
+      "Generated " +
+        player.name +
+        " the " +
+        player.negativeTrait.name +
+        " yet " +
+        player.positiveTrait.name
+    );
+  }
+
+  generateFloor(worldData, 1, seed);
+}
+
+function createGame(games) {
+  let worldData = { players: [], enemies: [], worldItems: [], worldMap: [] };
+
+  generateWorld(worldData, 1, Math.floor(Math.random() * 1000));
+
+  games.push(worldData);
+}
+
 let gameData = {
   randomPlayerNames: [
     "Bob Ross",
@@ -198,7 +476,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A short dagger",
       minimumfloor: 1,
-      maximumfloor: 3,
+      maximumfloor: 3
     },
     {
       identifier: "startingsword",
@@ -207,7 +485,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A sword",
       minimumfloor: 1,
-      maximumfloor: 3,
+      maximumfloor: 3
     },
     {
       identifier: "startingwand",
@@ -216,7 +494,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A wand that looks like it's made of plastic",
       minimumfloor: 1,
-      maximumfloor: 3,
+      maximumfloor: 3
     },
     {
       identifier: "witherdagger",
@@ -227,7 +505,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A deadly dagger that deals some damage back to you",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "vitalitydagger",
@@ -237,8 +515,8 @@ let gameData = {
       equipmentType: "weapon",
       description:
         "A dagger that makes you feel healthier....maybe it's a placebo",
-        minimumfloor: 4,
-        maximumfloor: 6,
+      minimumfloor: 4,
+      maximumfloor: 6
     },
     {
       identifier: "silverdagger",
@@ -248,7 +526,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A silver dagger, made in China",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "beastclaw",
@@ -258,8 +536,8 @@ let gameData = {
       equipmentType: "weapon",
       description:
         "A beast's claw. You think it came from an evil monster, like a telemarketer",
-        minimumfloor: 4,
-        maximumfloor: 6,
+      minimumfloor: 4,
+      maximumfloor: 6
     },
     {
       identifier: "talon",
@@ -269,7 +547,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "An assassin's favorite, sharp to the touch",
       minimumfloor: 7,
-      maximumfloor: 9,
+      maximumfloor: 9
     },
     {
       identifier: "manadagger",
@@ -279,7 +557,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A glowing dagger that boosts your mana energy",
       minimumfloor: 7,
-      maximumfloor: 9,
+      maximumfloor: 9
     },
     {
       identifier: "nexusdagger",
@@ -290,8 +568,8 @@ let gameData = {
       equipmentType: "weapon",
       description:
         "An obsidian dagger that takes away your life, like school but less subtly",
-        minimumfloor: 7,
-        maximumfloor: 9,
+      minimumfloor: 7,
+      maximumfloor: 9
     },
     {
       identifier: "staminadagger",
@@ -302,8 +580,8 @@ let gameData = {
       equipmentType: "weapon",
       description:
         "A lightweight dagger that boosts your endurance, because you're lazy",
-        minimumfloor: 7,
-        maximumfloor: 9,
+      minimumfloor: 7,
+      maximumfloor: 9
     },
     {
       identifier: "twinblades",
@@ -313,8 +591,8 @@ let gameData = {
       equipmentType: "weapon",
       description:
         "Blades of legend that belonged to two ancient cowards. Reading the enscription, you can tell they belonging to France and Italy",
-        minimumfloor: 7,
-        maximumfloor: 9,
+      minimumfloor: 7,
+      maximumfloor: 9
     },
     {
       identifier: "machete",
@@ -323,7 +601,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A machete",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "katana",
@@ -331,9 +609,10 @@ let gameData = {
       attackValue: 5,
       criticalHitBonus: 4,
       equipmentType: "weapon",
-      description: "A sword used by an ancient race of outcasts called 'Weeaboos'",
+      description:
+        "A sword used by an ancient race of outcasts called 'Weeaboos'",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "cutlass",
@@ -342,7 +621,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "ARRRRRGHHHH!",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "broadsword",
@@ -352,7 +631,7 @@ let gameData = {
       equipmentType: "weapon",
       description: "A plus-size sword, because even weapons need equality",
       minimumfloor: 4,
-      maximumfloor: 6,
+      maximumfloor: 6
     },
     {
       identifier: "biosword",
@@ -362,17 +641,18 @@ let gameData = {
       equipmentType: "weapon",
       description: "Makes you healthier",
       minimumfloor: 7,
-      maximumfloor: 9,
+      maximumfloor: 9
     },
     {
       identifier: "manasword",
       name: "Mana Sword",
       attackValue: 8,
       equipmentType: "weapon",
-      description: "Stardust shimmers off of the sword. Remember, don't snort the stardust, drugs are bad",
+      description:
+        "Stardust shimmers off of the sword. Remember, don't snort the stardust, drugs are bad",
       minimumfloor: 7,
-      maximumfloor: 9,
-    },   
+      maximumfloor: 9
+    },
     {
       identifier: "glasssword",
       name: "Glass Sword",
@@ -381,9 +661,10 @@ let gameData = {
       defenseValue: -15,
       criticalHitBonus: 10,
       equipmentType: "weapon",
-      description: "Your attack becomes really strong with this sword, but you become weak",
+      description:
+        "Your attack becomes really strong with this sword, but you become weak",
       minimumfloor: 7,
-      maximumfloor: 9,
+      maximumfloor: 9
     },
     {
       identifier: "excalibur",
@@ -392,8 +673,8 @@ let gameData = {
       equipmentType: "weapon",
       description: "The sword of legend",
       minimumfloor: 7,
-      maximumfloor: 9,
-    },
+      maximumfloor: 9
+    }
   ]
 };
 
@@ -401,20 +682,18 @@ wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
 
   if (games.length === 0) {
-
-    createGame ();
+    createGame();
 
     wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games [0].players [0].name
-      }
-  
-      client.send(JSON.stringify(message)); console.log ("Creating new game");
+        name: games[0].players[0].name
+      };
+
+      client.send(JSON.stringify(message));
+      console.log("Creating new game");
     });
-
   } else {
-
     let randomIndex = Math.floor(
       Math.random() * Math.floor(gameData.randomPlayerNames.length)
     );
@@ -423,7 +702,7 @@ wss.on("connection", function connection(ws, req) {
 
     assignPlayerTraits(player);
 
-    games [0].players.push(player);
+    games[0].players.push(player);
 
     console.log(
       "Generated " +
@@ -436,18 +715,14 @@ wss.on("connection", function connection(ws, req) {
 
     let message = {
       messageType: "NAME",
-      name: games [0].players [games [0].players.length-1].name
-    }
+      name: games[0].players[games[0].players.length - 1].name
+    };
 
-    ws.send(JSON.stringify(message)); console.log ("Joining game");
-
+    ws.send(JSON.stringify(message));
+    console.log("Joining game");
   }
 
-  ws.on("close", () =>
-    console.log(
-      "Client disconnected"
-    )
-  );
+  ws.on("close", () => console.log("Client disconnected"));
 });
 
 setInterval(() => {
