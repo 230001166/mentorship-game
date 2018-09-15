@@ -678,6 +678,7 @@ function createGame() {
 
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
+  console.log(wss.clients.size);
   if (games.length === 0) {
 
     createGame ();
@@ -708,7 +709,7 @@ wss.on("connection", function connection(ws, req) {
       name: games [0].players.length-1
     }
 
-    client.send(JSON.stringify(message)); console.log ("Joining game");
+    ws.send(JSON.stringify(message)); console.log ("Joining game");
 
   }
 
