@@ -678,7 +678,7 @@ function createGame() {
 
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
-  console.log(wss.clients.size);
+
   if (games.length === 0) {
 
     createGame ();
@@ -703,6 +703,15 @@ wss.on("connection", function connection(ws, req) {
     assignPlayerTraits(player);
 
     games [0].players.push(player);
+
+    console.log(
+      "Generated " +
+        player.name +
+        " the " +
+        player.negativeTrait.name +
+        " yet " +
+        player.positiveTrait.name
+    );
 
     let message = {
       messageType: "NAME",
