@@ -1,6 +1,6 @@
 "use strict";
 
-import * as express from 'express';
+import { express } from 'express';
 import * as WebSocket from 'ws';
 import * as path from 'path';
 
