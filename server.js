@@ -735,14 +735,14 @@ wss.on("connection", function connection(ws, req) {
 setInterval(() => {
   let numberOfInputsLeft = 0;
 
-  CLIENTS.forEach(element, index => {
+  CLIENTS.forEach((element, index) => {
     if (CLIENTS[index].hasSentInput === false) {
       numberOfInputsLeft++;
     }
   });
 
   if (numberOfInputsLeft === 0) {
-    wss.clients.forEach(client, index => {
+    wss.clients.forEach((client, index) => {
       let message = {
         messageType: "SERVERMESSAGE",
         text: "All players did an input!"
@@ -753,7 +753,7 @@ setInterval(() => {
       CLIENTS[index].hasSentInput = false;
     });
   } else {
-    wss.clients.forEach(client, index => {
+    wss.clients.forEach((client, index) => {
       if (CLIENTS[index].hasSentInput) {
         let message = {
           messageType: "SERVERMESSAGE",
