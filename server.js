@@ -735,7 +735,7 @@ wss.on("connection", function connection(ws, req) {
 setInterval(() => {
   let numberOfInputsLeft = 0;
 
-  CLIENTS.forEach(client, index => {
+  CLIENTS.forEach(element, index => {
     if (CLIENTS[index].hasSentInput === false) {
       numberOfInputsLeft++;
     }
