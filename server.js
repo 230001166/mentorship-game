@@ -343,7 +343,7 @@ let gameData = {
     "Gandalf",
     "Gary Oak",
     "Indiana Jones",
-    "James Government-issued Bond",
+    "Ruff Ruffman",
     "Ronald Drumpf",
     "Spock",
     "Dumbledore",
@@ -680,6 +680,11 @@ let gameData = {
 
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
+  CLIENTS[CLIENTS.length - 1].hasSentInput = false;
+
+  ws.onmessage = function(event) {
+    CLIENTS[event.data].hasSentInput = true;
+  };
 
   if (games.length === 0) {
     createGame();
@@ -687,7 +692,8 @@ wss.on("connection", function connection(ws, req) {
     wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games[0].players[0].name
+        name: games[0].players[0].name,
+        playerIndex: 0
       };
 
       client.send(JSON.stringify(message));
@@ -715,7 +721,8 @@ wss.on("connection", function connection(ws, req) {
 
     let message = {
       messageType: "NAME",
-      name: games[0].players[games[0].players.length - 1].name
+      name: games[0].players[games[0].players.length - 1].name,
+      playerIndex: games[0].players.length - 1
     };
 
     ws.send(JSON.stringify(message));
@@ -726,12 +733,35 @@ wss.on("connection", function connection(ws, req) {
 });
 
 setInterval(() => {
-  wss.clients.forEach(client => {
-    let message = {
-      messageType: "DATE",
-      date: new Date().toTimeString()
-    };
+  let numberOfInputsLeft = 0;
 
-    client.send(JSON.stringify(message));
+  CLIENTS.forEach(client, index => {
+    if (CLIENTS[index].hasSentInput === false) {
+      numberOfInputsLeft++;
+    }
   });
-}, 1000);
+
+  if (numberOfInputsLeft === 0) {
+    wss.clients.forEach(client, index => {
+      let message = {
+        messageType: "SERVERMESSAGE",
+        text: "All players did an input!"
+      };
+
+      client.send(JSON.stringify(message));
+
+      CLIENTS[index].hasSentInput = false;
+    });
+  } else {
+    wss.clients.forEach(client, index => {
+      if (CLIENTS[index].hasSentInput) {
+        let message = {
+          messageType: "SERVERMESSAGE",
+          text: "Awaiting other players' input..."
+        };
+
+        client.send(JSON.stringify(message));
+      }
+    });
+  }
+}, 2000);

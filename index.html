@@ -17,25 +17,35 @@
   <p id='server-time'>No messages from server yet.</p>
   <p id='status'>Player HP 56 MANA 1 STAMINA 10 STRENGTH 11 DEFENSE 7 CRITICAL 3 EXPERIENCE 1562</p>
   <p id='server-message'></p>
+  <button onclick = "sendInput()">Test Input</button>
   <script>
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
     var el = document.getElementById('server-time');
+    var playerIndex = 0;
     ws.onmessage = function (event) {
 
       let message = JSON.parse (event.data);
 
-        if (message.messageType === "DATE") {
+        if (message.messageType === "SERVERMESSAGE") {
           
-          el.innerHTML = 'Server time: ' + message.date;
+          el.innerHTML = message.text;
 
         } else if (message.messageType === "NAME") {
 
           el.innerHTML = message.name;
+          playerIndex = message.playerIndex;
 
         }
 
     };
+
+    function sendInput () {
+
+      ws.send (playerIndex);
+      console.log (playerIndex);
+
+    }
   </script>
   <style>
     #title {
