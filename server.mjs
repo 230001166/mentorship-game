@@ -1,8 +1,8 @@
 "use strict";
 
-const express = require("express");
-const SocketServer = require("ws").Server;
-const path = require("path");
+import * as express from 'express';
+import * as WebSocket from 'ws';
+import * as path from 'path';
 
 const PORT = process.env.PORT || 3000;
 const INDEX = path.join(__dirname, "index.html");
@@ -11,7 +11,7 @@ const server = express()
   .use((req, res) => res.sendFile(INDEX))
   .listen(PORT, () => console.log(`Listening on ${PORT}`));
 
-const wss = new SocketServer({ server, clientTracking: true });
+const wss = new WebSocket.server ({ server, clientTracking: true });
 
 import * as generator from './generation.mjs';
 import * as gameData from './gameData.mjs';
