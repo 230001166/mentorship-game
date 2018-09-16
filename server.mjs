@@ -5,6 +5,9 @@ import * as WebSocket from 'ws';
 import * as path from 'path';
 
 const PORT = process.env.PORT || 3000;
+
+let __dirname = path.resolve(path.dirname(''));
+
 const INDEX = path.join(__dirname, "index.html");
 
 const server = express()
