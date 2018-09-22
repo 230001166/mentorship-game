@@ -1,6 +1,6 @@
 "use strict";
 
-import { express } from 'express';
+import express from 'express';
 import * as WebSocket from 'ws';
 import * as path from 'path';
 
@@ -23,9 +23,17 @@ const CLIENTS = [];
 
 let games = [];
 
+function noop() {}
+ 
+function heartbeat() {
+  this.isAlive = true;
+}
+
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
+
+  ws.isAlive = true;
 
   ws.onmessage = function(event) {
     CLIENTS[event.data].hasSentInput = true;
@@ -74,6 +82,7 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
+  ws.on ('pong', heartbeat);
   ws.on("close", () => console.log("Client disconnected"));
 });
 
@@ -110,3 +119,12 @@ setInterval(() => {
     });
   }
 }, 2000);
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws) {
+    if (ws.isAlive === false) return ws.terminate();
+ 
+    ws.isAlive = false;
+    ws.ping(noop);
+  });
+}, 30000);
