@@ -1,7 +1,7 @@
 "use strict";
 
-import express from 'express';
-import * as WebSocket from 'ws';
+import { express } from 'express';
+import { WebSocket } from 'ws';
 import * as path from 'path';
 
 const PORT = process.env.PORT || 3000;
@@ -34,7 +34,6 @@ wss.on("connection", function connection(ws, req) {
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
 
   ws.isAlive = true;
-
   ws.onmessage = function(event) {
     CLIENTS[event.data].hasSentInput = true;
   };
