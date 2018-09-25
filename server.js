@@ -678,9 +678,15 @@ let gameData = {
   ]
 };
 
+function heartbeat() {
+  this.isAlive = true;
+}
+
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
+
+  ws.isAlive = true;
 
   ws.onmessage = function(event) {
     CLIENTS[event.data].hasSentInput = true;
@@ -729,6 +735,8 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
+  ws.on ('pong', heartbeat);
+
   ws.on("close", () => console.log("Client disconnected"));
 });
 
@@ -765,3 +773,26 @@ setInterval(() => {
     });
   }
 }, 2000);
+
+function sendDisconnectMessage (index) {
+
+  let disconnectedClientName = games [0].players [index].name;
+
+  let disconnectedClientMessage = disconnectedClientName + " disconnected";
+  let message = {
+    messageType: "SERVERMESSAGE",
+    text: disconnectedClientMessage
+  };
+
+  client.send(JSON.stringify(message));  
+
+}
+
+const interval = setInterval(function ping() {
+  wss.clients.forEach(function each(ws, index) {
+    if (ws.isAlive === false) { CLIENTS.splice (index, 1); sendDisconnectMessage (index); return ws.terminate();  }
+ 
+    ws.isAlive = false;
+    ws.ping(noop);
+  });
+}, 30000);
