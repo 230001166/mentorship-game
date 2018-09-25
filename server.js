@@ -788,6 +788,8 @@ function sendDisconnectMessage (index) {
 
 }
 
+function noop () { }
+
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws, index) {
     if (ws.isAlive === false) { CLIENTS.splice (index, 1); sendDisconnectMessage (index); console.log (index); return ws.terminate();  }
