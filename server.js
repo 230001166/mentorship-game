@@ -682,6 +682,31 @@ function heartbeat() {
   this.isAlive = true;
 }
 
+function sendDisconnectMessage (index) {
+
+  let disconnectedClientName = games [0].players [index].name;
+
+  let disconnectedClientMessage = disconnectedClientName + " disconnected";
+  let message = {
+    messageType: "SERVERMESSAGE",
+    text: disconnectedClientMessage
+  };
+
+  client.send(JSON.stringify(message));  
+
+}
+
+function noop () { }
+
+function disconnectClient (index) {
+
+  CLIENTS.splice (index, 1); 
+  games [0].players.splice (index, 1);
+  sendDisconnectMessage (index); 
+  console.log (index); 
+
+}
+
 wss.on("connection", function connection(ws, req) {
   CLIENTS.push(ws);
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
@@ -695,7 +720,7 @@ wss.on("connection", function connection(ws, req) {
   if (games.length === 0) {
     createGame();
 
-    wss.clients.forEach(client => {
+    wss.clients.forEach((client) => {
       let message = {
         messageType: "NAME",
         name: games[0].players[0].name,
@@ -737,7 +762,7 @@ wss.on("connection", function connection(ws, req) {
 
   ws.on ('pong', heartbeat);
 
-  ws.on("close", () => console.log("Client disconnected"));
+  ws.on("close", disconnectClient (ws));
 });
 
 setInterval(() => {
@@ -774,25 +799,9 @@ setInterval(() => {
   }
 }, 2000);
 
-function sendDisconnectMessage (index) {
-
-  let disconnectedClientName = games [0].players [index].name;
-
-  let disconnectedClientMessage = disconnectedClientName + " disconnected";
-  let message = {
-    messageType: "SERVERMESSAGE",
-    text: disconnectedClientMessage
-  };
-
-  client.send(JSON.stringify(message));  
-
-}
-
-function noop () { }
-
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws, index) {
-    if (ws.isAlive === false) { CLIENTS.splice (index, 1); sendDisconnectMessage (index); console.log (index); return ws.terminate();  }
+    if (ws.isAlive === false) { disconnectClient (index); return ws.terminate();  }
  
     ws.isAlive = false;
     ws.ping(noop);
