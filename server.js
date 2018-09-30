@@ -687,7 +687,7 @@ function disconnectClient(index) {
 function returnIndexFromUniqueIdentifier(ws) {
   CLIENTS.forEach((client, index) => {
     console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
-    if (client.uniqueIdentifier === ws.uniqueIdentifier) {
+    if (client.uniqueIdentifier == ws.uniqueIdentifier) { console.log ("Match!");
       return index;
     }
   });
