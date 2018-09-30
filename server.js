@@ -82,41 +82,23 @@ function assignPlayerTraits(player) {
     }
   }
 
-  let healthModifier =
-    1.0 +
-    player.positiveTrait.healthModifier +
-    player.negativeTrait.healthModifier;
+  player.maxHealth *= (1 + player.positiveTrait.healthModifier);
+  player.maxHealth *= (1 + player.negativeTrait.healthModifier);
+  player.health = player.maxHealth;
 
-  player.maxHealth *= healthModifier;
-  player.health = player.maxHealth; console.log (healthModifier + " health Modifier");
+  player.strength *= (1 + player.positiveTrait.attackModifier);
+  player.strength *= (1 + player.negativeTrait.attackModifier);
 
-  let attackModifier =
-    1.0 +
-    player.positiveTrait.attackModifier +
-    player.negativeTrait.attackModifier;
+  player.defense *= (1 + player.positiveTrait.defenseModifier);
+  player.defense *= (1 + player.negativeTrait.defenseModifier);
 
-  player.strength *= attackModifier;
-
-  let defenseModifier =
-    1.0 +
-    player.positiveTrait.defenseModifier +
-    player.negativeTrait.defenseModifier;
-
-  player.defense *= defenseModifier;
-
-  let staminaModifier =
-    1.0 +
-    player.positiveTrait.staminaModifier +
-    player.negativeTrait.staminaModifier;
-
-  player.maxStamina *= staminaModifier;
+  player.maxStamina *= (1 + player.positiveTrait.staminaModifier);
+  player.maxStamina *= (1 + player.negativeTrait.staminaModifier);
   player.stamina = player.maxStamina;
 
-  let manaModifier =
-    1.0 + player.positiveTrait.manaModifier + player.negativeTrait.manaModifier;
-
-  player.maxMana *= manaModifier;
-  player.health = player.maxMana;
+  player.maxMana *= (1 + player.positiveTrait.manaModifier);
+  player.maxMana *= (1 + player.negativeTrait.manaModifier);
+  player.mana = player.maxMana;
 }
 
 function isEmptySpaceClump(worldData, row, col) {
