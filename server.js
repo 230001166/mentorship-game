@@ -682,11 +682,10 @@ function heartbeat() {
   this.isAlive = true;
 }
 
-function sendDisconnectMessage (index) {
+function sendDisconnectMessage(index) {
+  console.log(games[0].players.length + " length " + index + " index");
 
-  console.log (games [0].players.length + " length " + index + " index");
-
-  let disconnectedClientName = games [0].players [index].name;
+  let disconnectedClientName = games[0].players[index].name;
 
   let disconnectedClientMessage = disconnectedClientName + " disconnected";
   let message = {
@@ -694,22 +693,29 @@ function sendDisconnectMessage (index) {
     text: disconnectedClientMessage
   };
 
-  client.send(JSON.stringify(message));  
-
+  client.send(JSON.stringify(message));
 }
 
-function noop () { }
+function noop() {}
 
-function disconnectClient (index) {
+function disconnectClient(index) {
+  CLIENTS.splice(index, 1);
+  sendDisconnectMessage(index);
+  games[0].players.splice(index, 1);
+  console.log("Client " + index + " disconnected");
+}
 
-  CLIENTS.splice (index, 1); 
-  sendDisconnectMessage (index); 
-  games [0].players.splice (index, 1);
-  console.log ("Client " + index + " disconnected"); 
-
+function returnIndexFromUniqueIdentifier(ws) {
+  CLIENTS.forEach((client, index) => {
+    if (client.uniqueIdentifier === ws.uniqueIdentifier) {
+      return index;
+    }
+  });
 }
 
 wss.on("connection", function connection(ws, req) {
+  ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
+
   CLIENTS.push(ws);
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
 
@@ -722,10 +728,10 @@ wss.on("connection", function connection(ws, req) {
   if (games.length === 0) {
     createGame();
 
-    wss.clients.forEach((client) => {
+    wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games[0].players [0].name,
+        name: games[0].players[0].name,
         playerIndex: 0
       };
 
@@ -762,9 +768,9 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on ('pong', heartbeat);
+  ws.on("pong", heartbeat);
 
-  ws.on("close", disconnectClient (ws));
+  ws.on("close", disconnectClient(returnIndexFromUniqueIdentifier(ws)));
 });
 
 setInterval(() => {
@@ -803,8 +809,12 @@ setInterval(() => {
 
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws, index) {
-    if (ws.isAlive === false) { console.log (index + " index"); disconnectClient (index); return ws.terminate();  }
- 
+    if (ws.isAlive === false) {
+      console.log(index + " index");
+      disconnectClient(index);
+      return ws.terminate();
+    }
+
     ws.isAlive = false;
     ws.ping(noop);
   });
