@@ -84,20 +84,27 @@ function assignPlayerTraits(player) {
 
   player.maxHealth *= (1 + player.positiveTrait.healthModifier);
   player.maxHealth *= (1 + player.negativeTrait.healthModifier);
+  player.maxHealth = Math.round (player.maxHealth);
   player.health = player.maxHealth;
 
   player.strength *= (1 + player.positiveTrait.attackModifier);
   player.strength *= (1 + player.negativeTrait.attackModifier);
+  player.strength = Math.round (player.strength);
+
 
   player.defense *= (1 + player.positiveTrait.defenseModifier);
   player.defense *= (1 + player.negativeTrait.defenseModifier);
+  player.defense = Math.round (player.defense);
+
 
   player.maxStamina *= (1 + player.positiveTrait.staminaModifier);
   player.maxStamina *= (1 + player.negativeTrait.staminaModifier);
+  player.maxStamina = Math.round (player.maxStamina);
   player.stamina = player.maxStamina;
 
   player.maxMana *= (1 + player.positiveTrait.manaModifier);
   player.maxMana *= (1 + player.negativeTrait.manaModifier);
+  player.maxMana = Math.round (player.maxMana);
   player.mana = player.maxMana;
 }
 
@@ -800,7 +807,7 @@ wss.on("connection", function connection(ws, req) {
       Math.random() * Math.floor(gameData.randomPlayerNames.length)
     );
     let playername = gameData.randomPlayerNames[randomIndex];
-    let player = createPlayer(playername, 45, 10, 15, 10, 10, 5, 2, 2);
+    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2);
 
     assignPlayerTraits(player);
 
