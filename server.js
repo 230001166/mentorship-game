@@ -684,12 +684,17 @@ function sendDisconnectMessage(index) {
   let disconnectedClientName = games[0].players[index].name;
 
   let disconnectedClientMessage = disconnectedClientName + " disconnected";
-  let message = {
-    messageType: "SERVERMESSAGE",
-    text: disconnectedClientMessage
-  };
 
-  client.send(JSON.stringify(message));
+  wss.clients.forEach(client => {
+
+    let message = {
+      messageType: "SERVERMESSAGE",
+      text: disconnectedClientMessage
+    };
+
+    client.send(JSON.stringify(message));
+    
+  });
 }
 
 function disconnectClient(index) {
