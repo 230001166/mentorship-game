@@ -306,7 +306,7 @@ function generateWorld(worldData, numberOfPlayers, seed) {
       Math.random() * Math.floor(gameData.randomPlayerNames.length)
     );
     let playername = gameData.randomPlayerNames[randomIndex];
-    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2);
+    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2); console.log ("player health " + player.health);
 
     assignPlayerTraits(player);
 
