@@ -681,13 +681,13 @@ let gameData = {
 function disconnectClient(index) {
   CLIENTS.splice(index, 1);
   games[0].players.splice(index, 1);
-  console.log("Client " + index + " disconnected");
 }
 
 function returnIndexFromUniqueIdentifier(ws) {
   CLIENTS.forEach((client, index) => {
     console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
-    if (client.uniqueIdentifier == ws.uniqueIdentifier) { console.log ("Match!");
+    if (client.uniqueIdentifier == ws.uniqueIdentifier) {
+      console.log("Match!");
       return index;
     }
   });
@@ -748,7 +748,12 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on ("close", () => console.log ("client " + returnIndexFromUniqueIdentifier (ws) + " disconnected"));
+  ws.on("close", () => {
+    console.log(
+      "client " + returnIndexFromUniqueIdentifier(ws) + " disconnected"
+    );
+    disconnectClient(returnIndexFromUniqueIdentifier(ws));
+  });
 });
 
 setInterval(() => {
