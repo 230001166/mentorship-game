@@ -30,15 +30,17 @@ function createPlayer(
 ) {
   return {
     name,
-    health,
+    health: 60,
     maxHealth: health,
-    mana,
+    mana: 15,
     maxMana: mana,
-    stamina,
+    stamina: 15,
     maxStamina: stamina,
-    strength,
-    defense,
+    strength: 10,
+    defense: 10,
     criticalChance,
+    experience: 0,
+    level: 1,
     positionRow,
     positionCol
   };
@@ -79,6 +81,26 @@ function assignPlayerTraits(player) {
       positiveTraitIsValid = true;
     }
   }
+
+  let healthModifier = 1.00 + player.positiveTrait.healthModifier + player.negativeTrait.healthModifier;
+
+  player.maxHealth *= healthModifier; player.health = player.maxHealth;
+
+  let attackModifier = 1.00 + player.positiveTrait.attackModifier + player.negativeTrait.attackModifier;
+
+  player.strength *= attackModifier;
+
+  let defenseModifier = 1.00 + player.positiveTrait.defenseModifier + player.negativeTrait.defenseModifier;
+
+  player.defense *= defenseModifier;
+
+  let staminaModifier = 1.00 + player.positiveTrait.staminaModifier + player.negativeTrait.staminaModifier;
+
+  player.maxStamina *= staminaModifier; player.stamina = player.maxStamina;
+
+  let manaModifier = 1.00 + player.positiveTrait.manaModifier + player.negativeTrait.manaModifier;
+
+  player.maxMana *= manaModifier; player.health = player.maxMana;
 }
 
 function isEmptySpaceClump(worldData, row, col) {
@@ -748,7 +770,7 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on("close", () => {
+  ws.on ("close", () => {
     console.log(
       "client " + returnIndexFromUniqueIdentifier(ws) + " disconnected"
     );
@@ -787,5 +809,18 @@ setInterval(() => {
         client.send(JSON.stringify(message));
       }
     });
+
   }
+
+  wss.clients.forEach((client, index) => {
+    if (CLIENTS[index].hasSentInput) {
+      let message = {
+        messageType: "PLAYERDATA",
+        data: games [0].players [index]
+      };
+
+      client.send(JSON.stringify(message));
+    }
+  });
+
 }, 1000);

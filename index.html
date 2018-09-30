@@ -10,14 +10,16 @@
 
 <body>
 
-  <p id='console'>You wake up in an unfamiliar place, remembering nothing but your name. Up ahead lies a great statue, of
-    what you aren't sure. To your right is a clay brick wall, and to your left you hear some monster lurking about. Behind
+  <p id='console'>You wake up in an unfamiliar place, remembering nothing but your name. Up ahead lies a great statue,
+    of
+    what you aren't sure. To your right is a clay brick wall, and to your left you hear some monster lurking about.
+    Behind
     you lies another wall.</p>
 
   <p id='server-time'>No messages from server yet.</p>
   <p id='status'>Player HP 56 MANA 1 STAMINA 10 STRENGTH 11 DEFENSE 7 CRITICAL 3 EXPERIENCE 1562</p>
   <p id='server-message'></p>
-  <button onclick = "sendInput()">Test Input</button>
+  <button onclick="sendInput()">Test Input</button>
   <script>
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
@@ -25,25 +27,38 @@
     var playerIndex = 0;
     ws.onmessage = function (event) {
 
-      let message = JSON.parse (event.data);
+      let message = JSON.parse(event.data);
 
-        if (message.messageType === "SERVERMESSAGE") {
-          
-          el.innerHTML = message.text;
+      if (message.messageType === "SERVERMESSAGE") {
 
-        } else if (message.messageType === "NAME") {
+        el.innerHTML = message.text;
 
-          el.innerHTML = message.name;
-          playerIndex = message.playerIndex;
+      } else if (message.messageType === "NAME") {
 
-        }
+        el.innerHTML = message.name;
+        playerIndex = message.playerIndex;
+
+      } else if (message.messageType === "PLAYERDATA") {
+
+        let status = document.getElementById('status');
+
+        status.innerHTML = message.data.name + " HP "
+         + message.data.health + " MANA "
+         + message.data.mana + " STAMINA "
+         + message.data.stamina + " STRENGTH "
+         + message.data.strength + " DEFENSE "
+         + message.data.defense + " CRITICAL "
+         + message.data.criticalChance + " EXPERIENCE "
+         + message.data.experience;
+
+      }
 
     };
 
-    function sendInput () {
+    function sendInput() {
 
-      ws.send (playerIndex);
-      console.log (playerIndex);
+      ws.send(playerIndex);
+      console.log(playerIndex);
 
     }
   </script>
@@ -86,7 +101,7 @@
       height: 15%;
       margin: 0px;
       font-size: 20px;
-      margin: 0px;     
+      margin: 0px;
     }
 
     #server-time {
