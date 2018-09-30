@@ -386,31 +386,63 @@ let gameData = {
     {
       name: "Formidable",
       defenseModifier: 0.33,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
       incompatibleTraits: ["Weak"]
     },
     {
       name: "Wise",
       manaModifier: 0.33,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
       incompatibleTraits: ["Stupid"]
     },
     {
       name: "Curious",
       experienceModifier: 0.25,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
       incompatibleTraits: ["default"]
     },
     {
       name: "Restless",
       staminaModifier: 0.15,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      manaModifier: 0.00,
       incompatibleTraits: ["Unathletic"]
     },
     {
       name: "Healthy",
       healthModifier: 0.15,
+
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
       incompatibleTraits: ["Sickly"]
     },
     {
       name: "Focused",
       criticalHitModifier: 7,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
       incompatibleTraits: ["default"]
     }
   ],
@@ -418,23 +450,48 @@ let gameData = {
   negativeTraits: [
     {
       name: "Unathletic",
-      staminaModifier: -0.25
+      staminaModifier: -0.25,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      manaModifier: 0.00,
     },
     {
       name: "Stupid",
-      manaModifier: -0.75
+      manaModifier: -0.75,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
     },
     {
       name: "Cowardly",
-      attackModifier: -0.33
+      attackModifier: -0.33,
+
+      healthModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
     },
     {
       name: "Sickly",
-      healthModifier: -0.33
+      healthModifier: -0.33,
+
+      attackModifier: 0.00,
+      defenseModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
     },
     {
       name: "Weak",
-      defenseModifier: -0.33
+      defenseModifier: -0.33,
+
+      healthModifier: 0.00,
+      attackModifier: 0.00,
+      staminaModifier: 0.00,
+      manaModifier: 0.00,
     }
   ],
 
