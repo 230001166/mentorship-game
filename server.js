@@ -701,8 +701,8 @@ function noop () { }
 function disconnectClient (index) {
 
   CLIENTS.splice (index, 1); 
-  games [0].players.splice (index, 1);
   sendDisconnectMessage (index); 
+  games [0].players.splice (index, 1);
   console.log ("Client " + index + " disconnected"); 
 
 }
