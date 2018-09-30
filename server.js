@@ -30,15 +30,15 @@ function createPlayer(
 ) {
   return {
     name,
-    health: 60,
+    health,
     maxHealth: health,
-    mana: 15,
+    mana,
     maxMana: mana,
-    stamina: 15,
+    stamina,
     maxStamina: stamina,
-    strength: 10,
-    defense: 10,
-    criticalChance: 5,
+    strength,
+    defense,
+    criticalChance,
     experience: 0,
     level: 1,
     positionRow,
@@ -82,25 +82,41 @@ function assignPlayerTraits(player) {
     }
   }
 
-  let healthModifier = 1.00 + player.positiveTrait.healthModifier + player.negativeTrait.healthModifier;
+  let healthModifier =
+    1.0 +
+    player.positiveTrait.healthModifier +
+    player.negativeTrait.healthModifier;
 
-  player.maxHealth *= healthModifier; player.health = player.maxHealth;
+  player.maxHealth *= healthModifier;
+  player.health = player.maxHealth; console.log (healthModifier + " health Modifier");
 
-  let attackModifier = 1.00 + player.positiveTrait.attackModifier + player.negativeTrait.attackModifier;
+  let attackModifier =
+    1.0 +
+    player.positiveTrait.attackModifier +
+    player.negativeTrait.attackModifier;
 
   player.strength *= attackModifier;
 
-  let defenseModifier = 1.00 + player.positiveTrait.defenseModifier + player.negativeTrait.defenseModifier;
+  let defenseModifier =
+    1.0 +
+    player.positiveTrait.defenseModifier +
+    player.negativeTrait.defenseModifier;
 
   player.defense *= defenseModifier;
 
-  let staminaModifier = 1.00 + player.positiveTrait.staminaModifier + player.negativeTrait.staminaModifier;
+  let staminaModifier =
+    1.0 +
+    player.positiveTrait.staminaModifier +
+    player.negativeTrait.staminaModifier;
 
-  player.maxStamina *= staminaModifier; player.stamina = player.maxStamina;
+  player.maxStamina *= staminaModifier;
+  player.stamina = player.maxStamina;
 
-  let manaModifier = 1.00 + player.positiveTrait.manaModifier + player.negativeTrait.manaModifier;
+  let manaModifier =
+    1.0 + player.positiveTrait.manaModifier + player.negativeTrait.manaModifier;
 
-  player.maxMana *= manaModifier; player.health = player.maxMana;
+  player.maxMana *= manaModifier;
+  player.health = player.maxMana;
 }
 
 function isEmptySpaceClump(worldData, row, col) {
@@ -290,7 +306,7 @@ function generateWorld(worldData, numberOfPlayers, seed) {
       Math.random() * Math.floor(gameData.randomPlayerNames.length)
     );
     let playername = gameData.randomPlayerNames[randomIndex];
-    let player = createPlayer(playername, 45, 10, 15, 10, 10, 5, 2, 2);
+    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2);
 
     assignPlayerTraits(player);
 
@@ -387,62 +403,62 @@ let gameData = {
       name: "Formidable",
       defenseModifier: 0.33,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0,
       incompatibleTraits: ["Weak"]
     },
     {
       name: "Wise",
       manaModifier: 0.33,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
       incompatibleTraits: ["Stupid"]
     },
     {
       name: "Curious",
       experienceModifier: 0.25,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0,
       incompatibleTraits: ["default"]
     },
     {
       name: "Restless",
       staminaModifier: 0.15,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      manaModifier: 0.0,
       incompatibleTraits: ["Unathletic"]
     },
     {
       name: "Healthy",
       healthModifier: 0.15,
 
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0,
       incompatibleTraits: ["Sickly"]
     },
     {
       name: "Focused",
       criticalHitModifier: 7,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0,
       incompatibleTraits: ["default"]
     }
   ],
@@ -452,46 +468,46 @@ let gameData = {
       name: "Unathletic",
       staminaModifier: -0.25,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      manaModifier: 0.0
     },
     {
       name: "Stupid",
       manaModifier: -0.75,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0
     },
     {
       name: "Cowardly",
       attackModifier: -0.33,
 
-      healthModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0
     },
     {
       name: "Sickly",
       healthModifier: -0.33,
 
-      attackModifier: 0.00,
-      defenseModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      attackModifier: 0.0,
+      defenseModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0
     },
     {
       name: "Weak",
       defenseModifier: -0.33,
 
-      healthModifier: 0.00,
-      attackModifier: 0.00,
-      staminaModifier: 0.00,
-      manaModifier: 0.00,
+      healthModifier: 0.0,
+      attackModifier: 0.0,
+      staminaModifier: 0.0,
+      manaModifier: 0.0
     }
   ],
 
@@ -827,7 +843,7 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on ("close", () => {
+  ws.on("close", () => {
     console.log(
       "client " + returnIndexFromUniqueIdentifier(ws) + " disconnected"
     );
@@ -866,18 +882,15 @@ setInterval(() => {
         client.send(JSON.stringify(message));
       }
     });
-
   }
 
   wss.clients.forEach((client, index) => {
-    if (CLIENTS[index].hasSentInput) {
-      let message = {
-        messageType: "PLAYERDATA",
-        data: games [0].players [index]
-      };
+    let message = {
+      messageType: "PLAYERDATA",
+      data: games[0].players[index]
+    };
 
-      client.send(JSON.stringify(message));
-    }
+    client.send(JSON.stringify(message));
   });
 
 }, 1000);
