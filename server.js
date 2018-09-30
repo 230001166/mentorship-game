@@ -684,6 +684,8 @@ function heartbeat() {
 
 function sendDisconnectMessage (index) {
 
+  console.log (games [0].players.length + " length");
+
   let disconnectedClientName = games [0].players [index].name;
 
   let disconnectedClientMessage = disconnectedClientName + " disconnected";
