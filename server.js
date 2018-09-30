@@ -38,7 +38,7 @@ function createPlayer(
     maxStamina: stamina,
     strength: 10,
     defense: 10,
-    criticalChance,
+    criticalChance: 5,
     experience: 0,
     level: 1,
     positionRow,
