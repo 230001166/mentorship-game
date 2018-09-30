@@ -678,40 +678,18 @@ let gameData = {
   ]
 };
 
-function sendDisconnectMessage(index) {
-  console.log(games[0].players.length + " length " + index + " index");
-
-  let disconnectedClientName = games[0].players[index].name;
-
-  let disconnectedClientMessage = disconnectedClientName + " disconnected";
-
-  wss.clients.forEach(client => {
-
-    let message = {
-      messageType: "SERVERMESSAGE",
-      text: disconnectedClientMessage
-    };
-
-    client.send(JSON.stringify(message));
-    
-  });
-}
-
 function disconnectClient(index) {
   CLIENTS.splice(index, 1);
-  sendDisconnectMessage(index);
   games[0].players.splice(index, 1);
   console.log("Client " + index + " disconnected");
 }
 
 function returnIndexFromUniqueIdentifier(ws) {
-  CLIENTS.forEach((client, index) => { console.log (client.uniqueIdentifier + " " + ws.uniqueIdentifier);
+  CLIENTS.forEach((client, index) => {
+    console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
     if (client.uniqueIdentifier === ws.uniqueIdentifier) {
-      
       return index;
-
     }
-
   });
 
   return 0;
