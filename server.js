@@ -723,7 +723,7 @@ wss.on("connection", function connection(ws, req) {
     wss.clients.forEach((client) => {
       let message = {
         messageType: "NAME",
-        name: games[0].players[0].name,
+        name: games[0].players [0].name,
         playerIndex: 0
       };
 
@@ -801,7 +801,7 @@ setInterval(() => {
 
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws, index) {
-    if (ws.isAlive === false) { disconnectClient (index); return ws.terminate();  }
+    if (ws.isAlive === false) { console.log (index + " index"); disconnectClient (index); return ws.terminate();  }
  
     ws.isAlive = false;
     ws.ping(noop);
