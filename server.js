@@ -703,7 +703,7 @@ function disconnectClient (index) {
   CLIENTS.splice (index, 1); 
   games [0].players.splice (index, 1);
   sendDisconnectMessage (index); 
-  console.log (index); 
+  console.log ("Client " + index + " disconnected"); 
 
 }
 
@@ -797,7 +797,7 @@ setInterval(() => {
       }
     });
   }
-}, 2000);
+}, 1000);
 
 const interval = setInterval(function ping() {
   wss.clients.forEach(function each(ws, index) {
