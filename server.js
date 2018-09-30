@@ -678,10 +678,6 @@ let gameData = {
   ]
 };
 
-function heartbeat() {
-  this.isAlive = true;
-}
-
 function sendDisconnectMessage(index) {
   console.log(games[0].players.length + " length " + index + " index");
 
@@ -695,8 +691,6 @@ function sendDisconnectMessage(index) {
 
   client.send(JSON.stringify(message));
 }
-
-function noop() {}
 
 function disconnectClient(index) {
   CLIENTS.splice(index, 1);
@@ -723,8 +717,6 @@ wss.on("connection", function connection(ws, req) {
 
   CLIENTS.push(ws);
   CLIENTS[CLIENTS.length - 1].hasSentInput = false;
-
-  ws.isAlive = true;
 
   ws.onmessage = function(event) {
     CLIENTS[event.data].hasSentInput = true;
@@ -773,8 +765,6 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on("pong", heartbeat);
-
   ws.on("close", disconnectClient(returnIndexFromUniqueIdentifier(ws)));
 });
 
@@ -811,16 +801,3 @@ setInterval(() => {
     });
   }
 }, 1000);
-
-const interval = setInterval(function ping() {
-  wss.clients.forEach(function each(ws, index) {
-    if (ws.isAlive === false) {
-      console.log(index + " index");
-      disconnectClient(index);
-      return ws.terminate();
-    }
-
-    ws.isAlive = false;
-    ws.ping(noop);
-  });
-}, 30000);
