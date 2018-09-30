@@ -748,7 +748,8 @@ wss.on("connection", function connection(ws, req) {
     console.log("Joining game");
   }
 
-  ws.on("close", disconnectClient(returnIndexFromUniqueIdentifier(ws)));
+  ws.onclose (disconnectClient(returnIndexFromUniqueIdentifier(ws)));
+
 });
 
 setInterval(() => {
