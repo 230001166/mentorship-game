@@ -768,15 +768,18 @@ function disconnectClient(index) {
 }
 
 function returnIndexFromUniqueIdentifier(ws) {
+
+  let clientIndex = 0;
   CLIENTS.forEach((client, index) => {
     console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
     if (client.uniqueIdentifier == ws.uniqueIdentifier) {
       console.log("Match! " + index);
-      return index;
+
+      clientIndex = index;
     }
   });
 
-  return 0;
+  return clientIndex;
 }
 
 wss.on("connection", function connection(ws, req) {
