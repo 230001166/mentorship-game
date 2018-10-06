@@ -13,7 +13,7 @@ const server = express()
 
 const wss = new SocketServer({ server, clientTracking: true });
 
-let games = [];
+let games = [ { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] } ];
 
 function createPlayer(
   name,
