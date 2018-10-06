@@ -13,8 +13,6 @@ const server = express()
 
 const wss = new SocketServer({ server, clientTracking: true });
 
-const CLIENTS = [];
-
 let games = [];
 
 function createPlayer(
@@ -315,11 +313,11 @@ function generateWorld(worldData, numberOfPlayers, seed) {
 }
 
 function createGame() {
-  let worldData = { players: [], enemies: [], worldItems: [], worldMap: [] };
+  let game = { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] };
 
-  generateWorld(worldData, 1, Math.floor(Math.random() * 1000));
+  generateWorld(game, 1, Math.floor(Math.random() * 1000));
 
-  games.push(worldData);
+  games.push(game);
 }
 
 let gameData = {
@@ -763,14 +761,14 @@ let gameData = {
 };
 
 function disconnectClient(index) {
-  CLIENTS.splice(index, 1);
+  games [0].CLIENTS.splice(index, 1);
   games[0].players.splice(index, 1);
 }
 
 function returnIndexFromUniqueIdentifier(ws) {
 
   let clientIndex = 0;
-  CLIENTS.forEach((client, index) => {
+  games [0].CLIENTS.forEach((client, index) => {
     console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
     if (client.uniqueIdentifier == ws.uniqueIdentifier) {
       console.log("Match! " + index);
@@ -785,15 +783,13 @@ function returnIndexFromUniqueIdentifier(ws) {
 wss.on("connection", function connection(ws, req) {
   ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
 
-  CLIENTS.push(ws);
-  CLIENTS[CLIENTS.length - 1].hasSentInput = false;
 
   ws.onmessage = function(event) {
-    CLIENTS[event.data].hasSentInput = true;
+    games [0].CLIENTS[event.data].hasSentInput = true;
   };
 
   if (games.length === 0) {
-    createGame();
+    createGame();  games [0].CLIENTS.push(ws);   games [0].CLIENTS[CLIENTS.length - 1].hasSentInput = false;
 
     wss.clients.forEach(client => {
       let message = {
@@ -846,8 +842,8 @@ wss.on("connection", function connection(ws, req) {
 setInterval(() => {
   let numberOfInputsLeft = 0;
 
-  CLIENTS.forEach((element, index) => {
-    if (CLIENTS[index].hasSentInput === false) {
+ games [0].CLIENTS.forEach((element, index) => {
+    if (games [0].CLIENTS[index].hasSentInput === false) {
       numberOfInputsLeft++;
     }
   });
@@ -861,11 +857,11 @@ setInterval(() => {
 
       client.send(JSON.stringify(message));
 
-      CLIENTS[index].hasSentInput = false;
+      games [0].CLIENTS[index].hasSentInput = false;
     });
   } else {
     wss.clients.forEach((client, index) => {
-      if (CLIENTS[index].hasSentInput) {
+      if (games [0].CLIENTS[index].hasSentInput) {
         let message = {
           messageType: "SERVERMESSAGE",
           text: "Awaiting other players' input..."
