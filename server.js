@@ -312,12 +312,12 @@ function generateWorld(worldData, numberOfPlayers, seed) {
   generateFloor(worldData, 1, seed);
 }
 
-function createGame() {
+function createGame () {
   let game = { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] };
 
   generateWorld(game, 1, Math.floor(Math.random() * 1000));
 
-  games.push(game);
+  games.push (game);
 }
 
 let gameData = {
@@ -789,7 +789,7 @@ wss.on("connection", function connection(ws, req) {
   };
 
   if (games.length === 0) {
-    createGame();  games [0].CLIENTS.push(ws);   games [0].CLIENTS[CLIENTS.length - 1].hasSentInput = false;
+    createGame();  games [0].CLIENTS.push(ws);   games [0].CLIENTS[games [0].CLIENTS.length - 1].hasSentInput = false;
 
     wss.clients.forEach(client => {
       let message = {
@@ -811,6 +811,7 @@ wss.on("connection", function connection(ws, req) {
     assignPlayerTraits(player);
 
     games[0].players.push(player);
+    games [0].CLIENTS.push(ws); 
 
     console.log(
       "Generated " +
