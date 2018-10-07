@@ -1022,7 +1022,7 @@ function broadcastPlayerSurroundings() {
       text: message
     };
 
-    client.send(serverMessage);
+    client.send(JSON.stringify (serverMessage));
   });
 }
 
