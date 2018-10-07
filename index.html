@@ -24,7 +24,7 @@
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
     var el = document.getElementById('server-time');
-    var playerIndex = 0;
+    let playerIndex = 0, gameIndex = 0;
     ws.onmessage = function (event) {
 
       let message = JSON.parse(event.data);
@@ -37,6 +37,7 @@
 
         el.innerHTML = message.name;
         playerIndex = message.playerIndex;
+        gameIndex = message.gameIndex;
 
       } else if (message.messageType === "PLAYERDATA") {
 
@@ -56,6 +57,13 @@
     };
 
     function sendInput() {
+
+      let message = {
+
+        playerIndex: playerIndex,
+        gameIndex: gameIndex
+
+      };
 
       ws.send(playerIndex);
       console.log(playerIndex);
@@ -86,7 +94,7 @@
       border-style: solid;
       border-color: #888888;
       margin: 0px;
-      font-family: 'Press Start 2P';
+      font-family: 'Aria';
       font-size: 24px;
       text-align: justify;
       padding: 24px;

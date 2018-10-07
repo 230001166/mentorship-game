@@ -13,7 +13,9 @@ const server = express()
 
 const wss = new SocketServer({ server, clientTracking: true });
 
-let games = [ { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] } ];
+let games = [
+  { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] }
+];
 
 function createPlayer(
   name,
@@ -80,29 +82,27 @@ function assignPlayerTraits(player) {
     }
   }
 
-  player.maxHealth *= (1 + player.positiveTrait.healthModifier);
-  player.maxHealth *= (1 + player.negativeTrait.healthModifier);
-  player.maxHealth = Math.round (player.maxHealth);
+  player.maxHealth *= 1 + player.positiveTrait.healthModifier;
+  player.maxHealth *= 1 + player.negativeTrait.healthModifier;
+  player.maxHealth = Math.round(player.maxHealth);
   player.health = player.maxHealth;
 
-  player.strength *= (1 + player.positiveTrait.attackModifier);
-  player.strength *= (1 + player.negativeTrait.attackModifier);
-  player.strength = Math.round (player.strength);
+  player.strength *= 1 + player.positiveTrait.attackModifier;
+  player.strength *= 1 + player.negativeTrait.attackModifier;
+  player.strength = Math.round(player.strength);
 
+  player.defense *= 1 + player.positiveTrait.defenseModifier;
+  player.defense *= 1 + player.negativeTrait.defenseModifier;
+  player.defense = Math.round(player.defense);
 
-  player.defense *= (1 + player.positiveTrait.defenseModifier);
-  player.defense *= (1 + player.negativeTrait.defenseModifier);
-  player.defense = Math.round (player.defense);
-
-
-  player.maxStamina *= (1 + player.positiveTrait.staminaModifier);
-  player.maxStamina *= (1 + player.negativeTrait.staminaModifier);
-  player.maxStamina = Math.round (player.maxStamina);
+  player.maxStamina *= 1 + player.positiveTrait.staminaModifier;
+  player.maxStamina *= 1 + player.negativeTrait.staminaModifier;
+  player.maxStamina = Math.round(player.maxStamina);
   player.stamina = player.maxStamina;
 
-  player.maxMana *= (1 + player.positiveTrait.manaModifier);
-  player.maxMana *= (1 + player.negativeTrait.manaModifier);
-  player.maxMana = Math.round (player.maxMana);
+  player.maxMana *= 1 + player.positiveTrait.manaModifier;
+  player.maxMana *= 1 + player.negativeTrait.manaModifier;
+  player.maxMana = Math.round(player.maxMana);
   player.mana = player.maxMana;
 }
 
@@ -183,6 +183,48 @@ function tileIsSurroundedByWalls(worldData, row, col) {
   }
 }
 
+function placeEmptyRooms (x, xOffset, y, yOffset) {
+  for (let i = 0; i < Math.abs(xOffset); i++) {
+    if (
+      xOffset < 0 &&
+      x - i >= 0 &&
+      !removingTileIsNotValid(worldData, x - (i + 1), y) &&
+      !tileIsSurroundedByWalls(worldData, x - (i + 1), y)
+    ) {
+      worldData.worldMap[x - (i + 1) + y * 5].identifier = "emptyroom";
+    }
+
+    if (
+      xOffset > 0 &&
+      x + i <= 4 &&
+      !removingTileIsNotValid(worldData, x + i + 1, y) &&
+      !tileIsSurroundedByWalls(worldData, x + i + 1, y)
+    ) {
+      worldData.worldMap[x + i + 1 + y * 5].identifier = "emptyroom";
+    }
+  }
+
+  for (let i = 0; i < Math.abs(yOffset); i++) {
+    if (
+      yOffset < 0 &&
+      y - i >= 0 &&
+      !removingTileIsNotValid(worldData, x, y - (i + 1)) &&
+      !tileIsSurroundedByWalls(worldData, x, y - (i + 1))
+    ) {
+      worldData.worldMap[x + (y - (i + 1)) * 5].identifier = "emptyroom";
+    }
+
+    if (
+      yOffset > 0 &&
+      y + i <= 4 &&
+      !removingTileIsNotValid(worldData, x, y + i + 1) &&
+      !tileIsSurroundedByWalls(worldData, x, y + i + 1)
+    ) {
+      worldData.worldMap[x + (y + i + 1) * 5].identifier = "emptyroom";
+    }
+  }
+}
+
 function generateFloor(worldData, floorLevel, seed) {
   if (floorLevel <= 3) {
     for (let i = 0; i < 25; i++) {
@@ -228,45 +270,8 @@ function generateFloor(worldData, floorLevel, seed) {
           yOffset = Math.floor(Math.random() * Math.floor(5)) - 2;
         }
 
-        for (let i = 0; i < Math.abs(xOffset); i++) {
-          if (
-            xOffset < 0 &&
-            x - i >= 0 &&
-            !removingTileIsNotValid(worldData, x - (i + 1), y) &&
-            !tileIsSurroundedByWalls(worldData, x - (i + 1), y)
-          ) {
-            worldData.worldMap[x - (i + 1) + y * 5].identifier = "emptyroom";
-          }
+        placeEmptyRooms(x, xOffset, y, yOffset);
 
-          if (
-            xOffset > 0 &&
-            x + i <= 4 &&
-            !removingTileIsNotValid(worldData, x + i + 1, y) &&
-            !tileIsSurroundedByWalls(worldData, x + i + 1, y)
-          ) {
-            worldData.worldMap[x + i + 1 + y * 5].identifier = "emptyroom";
-          }
-        }
-
-        for (let i = 0; i < Math.abs(yOffset); i++) {
-          if (
-            yOffset < 0 &&
-            y - i >= 0 &&
-            !removingTileIsNotValid(worldData, x, y - (i + 1)) &&
-            !tileIsSurroundedByWalls(worldData, x, y - (i + 1))
-          ) {
-            worldData.worldMap[x + (y - (i + 1)) * 5].identifier = "emptyroom";
-          }
-
-          if (
-            yOffset > 0 &&
-            y + i <= 4 &&
-            !removingTileIsNotValid(worldData, x, y + i + 1) &&
-            !tileIsSurroundedByWalls(worldData, x, y + i + 1)
-          ) {
-            worldData.worldMap[x + (y + i + 1) * 5].identifier = "emptyroom";
-          }
-        }
       }
 
       wallClumpsRemain = false;
@@ -293,7 +298,8 @@ function generateWorld(worldData, numberOfPlayers, seed) {
       Math.random() * Math.floor(gameData.randomPlayerNames.length)
     );
     let playername = gameData.randomPlayerNames[randomIndex];
-    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2); console.log ("player health " + player.health);
+    let player = createPlayer(playername, 60, 15, 15, 10, 10, 5, 2, 2);
+    console.log("player health " + player.health);
 
     assignPlayerTraits(player);
 
@@ -312,12 +318,18 @@ function generateWorld(worldData, numberOfPlayers, seed) {
   generateFloor(worldData, 1, seed);
 }
 
-function createGame () {
-  let game = { players: [], enemies: [], worldItems: [], worldMap: [], CLIENTS: [] };
+function createGame() {
+  let game = {
+    players: [],
+    enemies: [],
+    worldItems: [],
+    worldMap: [],
+    CLIENTS: []
+  };
 
   generateWorld(game, 1, Math.floor(Math.random() * 1000));
 
-  games.push (game);
+  games.push(game);
 }
 
 let gameData = {
@@ -760,15 +772,14 @@ let gameData = {
   ]
 };
 
-function disconnectClient(index) {
-  games [0].CLIENTS.splice(index, 1);
-  games[0].players.splice(index, 1);
+function disconnectClient(index, gameIndex) {
+  games[gameIndex].CLIENTS.splice(index, 1);
+  games[gameIndex].players.splice(index, 1);
 }
 
-function returnIndexFromUniqueIdentifier(ws) {
-
+function returnIndexFromUniqueIdentifier(ws, gameIndex) {
   let clientIndex = 0;
-  games [0].CLIENTS.forEach((client, index) => {
+  games[gameIndex].CLIENTS.forEach((client, index) => {
     console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
     if (client.uniqueIdentifier == ws.uniqueIdentifier) {
       console.log("Match! " + index);
@@ -780,22 +791,52 @@ function returnIndexFromUniqueIdentifier(ws) {
   return clientIndex;
 }
 
+function gameIsFull (index) {
+
+  if (games[index].CLIENTS.length > 5) { console.log ("Game " + index + " is full!");
+
+    return true;
+
+  } else {
+
+    return false;
+
+  }
+
+}
+
+function noGamesAreAvailable () {
+
+  for (let i = 0; i < games.length; i++) {
+
+    if (!gameIsFull (i)) { return false; }
+
+  }
+
+  if (games.length === 0) { return false; }
+
+  return true;
+}
+
 wss.on("connection", function connection(ws, req) {
   ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
 
-
   ws.onmessage = function(event) {
-    games [0].CLIENTS[event.data].hasSentInput = true;
+    games[event.data.gameIndex].CLIENTS[event.data.playerIndex].hasSentInput = true;
   };
 
-  if (games.length === 0) {
-    createGame();  games [0].CLIENTS.push(ws);   games [0].CLIENTS[games [0].CLIENTS.length - 1].hasSentInput = false;
+  if (noGamesAreAvailable ()) {
+    createGame(); console.log ("Created game " + games.length-1 + "!");
+    ws.gameIndex = games.length-1;
+    games[games.length-1].CLIENTS.push(ws);
+    games[games.length-1].CLIENTS[games[games.length-1].CLIENTS.length - 1].hasSentInput = false;
 
     wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games[0].players[0].name,
-        playerIndex: 0
+        name: games[games.length-1].players[0].name,
+        playerIndex: 0,
+        gameIndex: ws.gameIndex
       };
 
       client.send(JSON.stringify(message));
@@ -810,8 +851,9 @@ wss.on("connection", function connection(ws, req) {
 
     assignPlayerTraits(player);
 
-    games[0].players.push(player);
-    games [0].CLIENTS.push(ws); 
+    ws.gameIndex = games.length-1;
+    games[games.length-1].players.push(player);
+    games[games.length-1].CLIENTS.push(ws);
 
     console.log(
       "Generated " +
@@ -824,55 +866,69 @@ wss.on("connection", function connection(ws, req) {
 
     let message = {
       messageType: "NAME",
-      name: games[0].players[games[0].players.length - 1].name,
-      playerIndex: games[0].players.length - 1
+      name: games[games.length-1].players[games[games.length-1].players.length - 1].name,
+      playerIndex: games[games.length-1].players.length - 1,
+      gameIndex: games.length-1
     };
 
     ws.send(JSON.stringify(message));
-    console.log("Joining game");
+    console.log("Joining game " + gameIndex);
   }
 
   ws.on("close", () => {
     console.log(
-      "client " + returnIndexFromUniqueIdentifier(ws) + " disconnected"
+      "client " + returnIndexFromUniqueIdentifier(ws, ws.gameIndex) + " disconnected"
     );
-    disconnectClient(returnIndexFromUniqueIdentifier(ws));
+    disconnectClient(returnIndexFromUniqueIdentifier(ws, ws.gameIndex), ws.gameIndex);
   });
 });
 
-setInterval(() => {
+function updateInput() {
   let numberOfInputsLeft = 0;
 
- games [0].CLIENTS.forEach((element, index) => {
-    if (games [0].CLIENTS[index].hasSentInput === false) {
-      numberOfInputsLeft++;
-    }
-  });
+  games.forEach ((game, index) => {
 
-  if (numberOfInputsLeft === 0) {
-    wss.clients.forEach((client, index) => {
-      let message = {
-        messageType: "SERVERMESSAGE",
-        text: "All players did an input!"
-      };
-
-      client.send(JSON.stringify(message));
-
-      games [0].CLIENTS[index].hasSentInput = false;
-    });
-  } else {
-    wss.clients.forEach((client, index) => {
-      if (games [0].CLIENTS[index].hasSentInput) {
-        let message = {
-          messageType: "SERVERMESSAGE",
-          text: "Awaiting other players' input..."
-        };
-
-        client.send(JSON.stringify(message));
+    games[index].CLIENTS.forEach((element, clientIndex) => {
+      if (games[index].CLIENTS[clientIndex].hasSentInput === false) {
+        numberOfInputsLeft++;
       }
     });
-  }
+  
+    if (numberOfInputsLeft === 0) {
+      wss.clients.forEach((client) => {
+        let message = {
+          messageType: "SERVERMESSAGE",
+          text: "All players did an input!"
+        };
 
+        if (client.gameIndex === index) {
+          client.send(JSON.stringify(message));
+          games[client.gameIndex].CLIENTS[returnIndexFromUniqueIdentifier (client, client.gameIndex)].hasSentInput = false;
+        }
+        
+      });
+    } else {
+      wss.clients.forEach((client) => {
+        if (games[client.gameIndex].CLIENTS[returnIndexFromUniqueIdentifier (client, client.gameIndex)].hasSentInput) {
+          let message = {
+            messageType: "SERVERMESSAGE",
+            text: "Awaiting other players' input..."
+          };
+  
+          if (client.gameIndex === index) {
+            client.send(JSON.stringify(message));
+          }
+        }
+      });
+    }
+
+    numberOfInputsLeft = 0;
+
+  });
+
+}
+
+function broadcastPlayerData() {
   wss.clients.forEach((client, index) => {
     let message = {
       messageType: "PLAYERDATA",
@@ -881,5 +937,10 @@ setInterval(() => {
 
     client.send(JSON.stringify(message));
   });
+}
 
+setInterval(() => {
+  updateInput();
+
+  broadcastPlayerData();
 }, 1000);
