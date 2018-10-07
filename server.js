@@ -822,7 +822,7 @@ wss.on("connection", function connection(ws, req) {
   ws.onmessage = function(event) {
 
     let message = JSON.parse (event.data); console.log (message.gameIndex + " gameIndex - message " + message);
-    games[message.gameIndex].CLIENTS[messageIndex.playerIndex].hasSentInput = true;
+    games[message.gameIndex].CLIENTS[message.playerIndex].hasSentInput = true;
   };
 
   if (noGamesAreAvailable ()) {
