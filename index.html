@@ -24,7 +24,8 @@
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
     var el = document.getElementById('server-time');
-    let playerIndex = 0, gameIndex = 0;
+    let playerIndex = 0
+    let gameIndex = 0;
     ws.onmessage = function (event) {
 
       let message = JSON.parse(event.data);

@@ -780,9 +780,7 @@ function disconnectClient(index, gameIndex) {
 function returnIndexFromUniqueIdentifier(ws, gameIndex) {
   let clientIndex = 0;
   games[gameIndex].CLIENTS.forEach((client, index) => {
-    console.log(client.uniqueIdentifier + " " + ws.uniqueIdentifier);
     if (client.uniqueIdentifier == ws.uniqueIdentifier) {
-      console.log("Match! " + index);
 
       clientIndex = index;
     }
@@ -822,7 +820,9 @@ wss.on("connection", function connection(ws, req) {
   ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
 
   ws.onmessage = function(event) {
-    games[event.data.gameIndex].CLIENTS[event.data.playerIndex].hasSentInput = true;
+
+    let message = JSON.parse (event.data);
+    games[message.gameIndex].CLIENTS[messageIndex.playerIndex].hasSentInput = true;
   };
 
   if (noGamesAreAvailable ()) {
@@ -856,12 +856,11 @@ wss.on("connection", function connection(ws, req) {
     games[games.length-1].CLIENTS.push(ws);
 
     console.log(
-      "Generated " +
         player.name +
         " the " +
         player.negativeTrait.name +
         " yet " +
-        player.positiveTrait.name
+        player.positiveTrait.name + "has joined game " + games.length-1
     );
 
     let message = {
