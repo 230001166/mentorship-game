@@ -821,7 +821,7 @@ wss.on("connection", function connection(ws, req) {
 
   ws.onmessage = function(event) {
 
-    let message = JSON.parse (event.data);
+    let message = JSON.parse (event.data); console.log (message.gameIndex + " gameIndex");
     games[message.gameIndex].CLIENTS[messageIndex.playerIndex].hasSentInput = true;
   };
 
@@ -860,7 +860,7 @@ wss.on("connection", function connection(ws, req) {
         " the " +
         player.negativeTrait.name +
         " yet " +
-        player.positiveTrait.name + "has joined game " + games.length-1
+        player.positiveTrait.name + "has joined game " + (games.length-1)
     );
 
     let message = {
@@ -871,7 +871,7 @@ wss.on("connection", function connection(ws, req) {
     };
 
     ws.send(JSON.stringify(message));
-    console.log("Joining game " + games.length-1);
+
   }
 
   ws.on("close", () => {
