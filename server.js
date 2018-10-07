@@ -872,7 +872,7 @@ wss.on("connection", function connection(ws, req) {
     };
 
     ws.send(JSON.stringify(message));
-    console.log("Joining game " + gameIndex);
+    console.log("Joining game " + games.length-1);
   }
 
   ws.on("close", () => {
