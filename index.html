@@ -53,6 +53,11 @@
          + message.data.criticalChance + " EXPERIENCE "
          + message.data.experience;
 
+      } else if (message.messageType === "CONSOLE") {
+
+        let consoleP = document.getElementById('console');
+
+        consoleP.innerHTML = message.text;
       }
 
     };

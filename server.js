@@ -183,7 +183,7 @@ function tileIsSurroundedByWalls(worldData, row, col) {
   }
 }
 
-function placeEmptyRooms (worldData, x, xOffset, y, yOffset) {
+function placeEmptyRooms(worldData, x, xOffset, y, yOffset) {
   for (let i = 0; i < Math.abs(xOffset); i++) {
     if (
       xOffset < 0 &&
@@ -271,7 +271,6 @@ function generateFloor(worldData, floorLevel, seed) {
         }
 
         placeEmptyRooms(worldData, x, xOffset, y, yOffset);
-
       }
 
       wallClumpsRemain = false;
@@ -394,7 +393,11 @@ let gameData = {
     "Kim jong un",
     "Barack Obama",
     "Bill Clinton",
-    "Hillary Clinton"
+    "Hillary Clinton",
+    "Pikachu",
+    "Curious George",
+    "Plankton",
+    "George Washington"
   ],
 
   positiveTraits: [
@@ -781,7 +784,6 @@ function returnIndexFromUniqueIdentifier(ws, gameIndex) {
   let clientIndex = 0;
   games[gameIndex].CLIENTS.forEach((client, index) => {
     if (client.uniqueIdentifier == ws.uniqueIdentifier) {
-
       clientIndex = index;
     }
   });
@@ -789,29 +791,26 @@ function returnIndexFromUniqueIdentifier(ws, gameIndex) {
   return clientIndex;
 }
 
-function gameIsFull (index) {
-
-  if (games[index].CLIENTS.length > 5) { console.log ("Game " + index + " is full!");
+function gameIsFull(index) {
+  if (games[index].CLIENTS.length > 5) {
+    console.log("Game " + index + " is full!");
 
     return true;
-
   } else {
-
     return false;
-
   }
-
 }
 
-function noGamesAreAvailable () {
-
+function noGamesAreAvailable() {
   for (let i = 0; i < games.length; i++) {
-
-    if (!gameIsFull (i)) { return false; }
-
+    if (!gameIsFull(i)) {
+      return false;
+    }
   }
 
-  if (games.length === 0) { return false; }
+  if (games.length === 0) {
+    return false;
+  }
 
   return true;
 }
@@ -820,21 +819,24 @@ wss.on("connection", function connection(ws, req) {
   ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
 
   ws.onmessage = function(event) {
-
-    let message = JSON.parse (event.data); console.log (message.gameIndex + " gameIndex - message " + message);
+    let message = JSON.parse(event.data);
+    console.log(message.gameIndex + " gameIndex - message " + message);
     games[message.gameIndex].CLIENTS[message.playerIndex].hasSentInput = true;
   };
 
-  if (noGamesAreAvailable ()) {
-    createGame(); console.log ("Created game " + games.length-1 + "!");
-    ws.gameIndex = games.length-1;
-    games[games.length-1].CLIENTS.push(ws);
-    games[games.length-1].CLIENTS[games[games.length-1].CLIENTS.length - 1].hasSentInput = false;
+  if (noGamesAreAvailable()) {
+    createGame();
+    console.log("Created game " + games.length - 1 + "!");
+    ws.gameIndex = games.length - 1;
+    games[games.length - 1].CLIENTS.push(ws);
+    games[games.length - 1].CLIENTS[
+      games[games.length - 1].CLIENTS.length - 1
+    ].hasSentInput = false;
 
     wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games[games.length-1].players[0].name,
+        name: games[games.length - 1].players[0].name,
         playerIndex: 0,
         gameIndex: ws.gameIndex
       };
@@ -851,50 +853,58 @@ wss.on("connection", function connection(ws, req) {
 
     assignPlayerTraits(player);
 
-    ws.gameIndex = games.length-1;
-    games[games.length-1].players.push(player);
-    games[games.length-1].CLIENTS.push(ws);
+    ws.gameIndex = games.length - 1;
+    games[games.length - 1].players.push(player);
+    games[games.length - 1].CLIENTS.push(ws);
 
     console.log(
-        player.name +
+      player.name +
         " the " +
         player.negativeTrait.name +
         " yet " +
-        player.positiveTrait.name + "has joined game " + (games.length-1)
+        player.positiveTrait.name +
+        "has joined game " +
+        (games.length - 1)
     );
 
     let message = {
       messageType: "NAME",
-      name: games[games.length-1].players[games[games.length-1].players.length - 1].name,
-      playerIndex: games[games.length-1].players.length - 1,
-      gameIndex: games.length-1
+      name:
+        games[games.length - 1].players[
+          games[games.length - 1].players.length - 1
+        ].name,
+      playerIndex: games[games.length - 1].players.length - 1,
+      gameIndex: games.length - 1
     };
 
     ws.send(JSON.stringify(message));
-
   }
 
   ws.on("close", () => {
     console.log(
-      "client " + returnIndexFromUniqueIdentifier(ws, ws.gameIndex) + " disconnected"
+      "client " +
+        returnIndexFromUniqueIdentifier(ws, ws.gameIndex) +
+        " disconnected"
     );
-    disconnectClient(returnIndexFromUniqueIdentifier(ws, ws.gameIndex), ws.gameIndex);
+    disconnectClient(
+      returnIndexFromUniqueIdentifier(ws, ws.gameIndex),
+      ws.gameIndex
+    );
   });
 });
 
 function updateInput() {
   let numberOfInputsLeft = 0;
 
-  games.forEach ((game, index) => {
-
+  games.forEach((game, index) => {
     games[index].CLIENTS.forEach((element, clientIndex) => {
       if (games[index].CLIENTS[clientIndex].hasSentInput === false) {
         numberOfInputsLeft++;
       }
     });
-  
+
     if (numberOfInputsLeft === 0) {
-      wss.clients.forEach((client) => {
+      wss.clients.forEach(client => {
         let message = {
           messageType: "SERVERMESSAGE",
           text: "All players did an input!"
@@ -902,18 +912,23 @@ function updateInput() {
 
         if (client.gameIndex === index) {
           client.send(JSON.stringify(message));
-          games[client.gameIndex].CLIENTS[returnIndexFromUniqueIdentifier (client, client.gameIndex)].hasSentInput = false;
+          games[client.gameIndex].CLIENTS[
+            returnIndexFromUniqueIdentifier(client, client.gameIndex)
+          ].hasSentInput = false;
         }
-        
       });
     } else {
-      wss.clients.forEach((client) => {
-        if (games[client.gameIndex].CLIENTS[returnIndexFromUniqueIdentifier (client, client.gameIndex)].hasSentInput) {
+      wss.clients.forEach(client => {
+        if (
+          games[client.gameIndex].CLIENTS[
+            returnIndexFromUniqueIdentifier(client, client.gameIndex)
+          ].hasSentInput
+        ) {
           let message = {
             messageType: "SERVERMESSAGE",
             text: "Awaiting other players' input..."
           };
-  
+
           if (client.gameIndex === index) {
             client.send(JSON.stringify(message));
           }
@@ -922,19 +937,84 @@ function updateInput() {
     }
 
     numberOfInputsLeft = 0;
-
   });
-
 }
 
 function broadcastPlayerData() {
   wss.clients.forEach((client, index) => {
     let message = {
       messageType: "PLAYERDATA",
-      data: games[0].players[index]
+      data:
+        games[client.gameIndex].players[
+          returnIndexFromUniqueIdentifier(client, client.gameIndex)
+        ]
     };
 
     client.send(JSON.stringify(message));
+  });
+}
+
+function broadcastPlayerSurroundings() {
+  wss.clients.forEach(client => {
+    let message = "You are standing in ";
+
+    let player =
+      games[client.gameIndex].players[
+        returnIndexFromUniqueIdentifier(client, client.gameIndex)
+      ];
+
+    let tileIndexPlayerIsOn = player.positionCol + player.positionRow * 5;
+
+    if (worldData.worldMap[tileIndexPlayerIsOn].identifier === "emptyroom") {
+      message += "an empty room.";
+    }
+
+    message += " To your left is ";
+
+    if (
+      worldData.worldMap[tileIndexPlayerIsOn - 1].identifier === "emptyroom"
+    ) {
+      message += "an empty room";
+    } else {
+      message += "a stone wall.";
+    }
+
+    message += " To your right is ";
+
+    if (
+      worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
+    ) {
+      message += "an empty room";
+    } else {
+      message += "a stone wall.";
+    }
+
+    message += " In front of you is ";
+
+    if (
+      worldData.worldMap[tileIndexPlayerIsOn - 5].identifier === "emptyroom"
+    ) {
+      message += "an empty room";
+    } else {
+      message += "a stone wall.";
+    }
+
+    message += " To the south is ";
+
+    if (
+      worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
+    ) {
+      message += "an empty room";
+    } else {
+      message += "a stone wall.";
+    }
+
+    let serverMessage = {
+      messageType: "CONSOLE",
+      text: message
+    };
+
+    client.send(serverMessage);
   });
 }
 
@@ -942,4 +1022,26 @@ setInterval(() => {
   updateInput();
 
   broadcastPlayerData();
+
+  broadcastPlayerSurroundings();
 }, 1000);
+
+function temp_renderMap() {
+  let mapString = "";
+
+  let width = Math.sqrt(worldData.worldMap.length);
+
+  worldData.worldMap.forEach((tile, index) => {
+    if (tile.identifier === "emptyroom") {
+      mapString += "-";
+    } else {
+      mapString += "#";
+    }
+
+    if ((index % width) + 1 == width) {
+      mapString += "\n";
+    }
+  });
+
+  console.log(mapString);
+}
