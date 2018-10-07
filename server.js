@@ -867,6 +867,12 @@ wss.on("connection", function connection(ws, req) {
         (games.length - 1)
     );
 
+    if (games [games.length - 1].players.length === 1) {
+
+      generateFloor (games [games.length - 1], 1, Math.floor (Math.random () * 500));
+
+    }
+
     let message = {
       messageType: "NAME",
       name:
