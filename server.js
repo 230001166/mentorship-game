@@ -963,7 +963,7 @@ function broadcastPlayerSurroundings() {
         returnIndexFromUniqueIdentifier(client, client.gameIndex)
       ];
 
-    let worldData = games[client.gameIndex].worldData;
+    let worldData = games[client.gameIndex];
 
     let tileIndexPlayerIsOn = player.positionCol + player.positionRow * 5;
 
