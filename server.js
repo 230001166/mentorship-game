@@ -963,6 +963,8 @@ function broadcastPlayerSurroundings() {
         returnIndexFromUniqueIdentifier(client, client.gameIndex)
       ];
 
+    let worldData = games[client.gameIndex].worldData;
+
     let tileIndexPlayerIsOn = player.positionCol + player.positionRow * 5;
 
     if (worldData.worldMap[tileIndexPlayerIsOn].identifier === "emptyroom") {
