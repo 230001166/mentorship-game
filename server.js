@@ -183,7 +183,7 @@ function tileIsSurroundedByWalls(worldData, row, col) {
   }
 }
 
-function placeEmptyRooms (x, xOffset, y, yOffset) {
+function placeEmptyRooms (worldData, x, xOffset, y, yOffset) {
   for (let i = 0; i < Math.abs(xOffset); i++) {
     if (
       xOffset < 0 &&
@@ -270,7 +270,7 @@ function generateFloor(worldData, floorLevel, seed) {
           yOffset = Math.floor(Math.random() * Math.floor(5)) - 2;
         }
 
-        placeEmptyRooms(x, xOffset, y, yOffset);
+        placeEmptyRooms(worldData, x, xOffset, y, yOffset);
 
       }
 
