@@ -977,32 +977,32 @@ function broadcastPlayerSurroundings() {
       message += "an empty room.";
     }
 
-    message += " To your left is ";
+    message += " To the west is ";
 
     if (
       worldData.worldMap[tileIndexPlayerIsOn - 1].identifier === "emptyroom"
     ) {
-      message += "an empty room";
+      message += "an empty room.";
     } else {
       message += "a stone wall.";
     }
 
-    message += " To your right is ";
+    message += " To the east is ";
 
     if (
       worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
     ) {
-      message += "an empty room";
+      message += "an empty room.";
     } else {
       message += "a stone wall.";
     }
 
-    message += " In front of you is ";
+    message += " To the north is ";
 
     if (
       worldData.worldMap[tileIndexPlayerIsOn - 5].identifier === "emptyroom"
     ) {
-      message += "an empty room";
+      message += "an empty room.";
     } else {
       message += "a stone wall.";
     }
@@ -1012,7 +1012,7 @@ function broadcastPlayerSurroundings() {
     if (
       worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
     ) {
-      message += "an empty room";
+      message += "an empty room.";
     } else {
       message += "a stone wall.";
     }
@@ -1033,23 +1033,3 @@ setInterval(() => {
 
   broadcastPlayerSurroundings();
 }, 1000);
-
-function temp_renderMap() {
-  let mapString = "";
-
-  let width = Math.sqrt(worldData.worldMap.length);
-
-  worldData.worldMap.forEach((tile, index) => {
-    if (tile.identifier === "emptyroom") {
-      mapString += "-";
-    } else {
-      mapString += "#";
-    }
-
-    if ((index % width) + 1 == width) {
-      mapString += "\n";
-    }
-  });
-
-  console.log(mapString);
-}
