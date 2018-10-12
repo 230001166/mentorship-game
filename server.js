@@ -911,19 +911,45 @@ function serverLogic(gameIndex) {
     let tileIndexPlayerIsOn = player.positionCol + player.positionRow * 5;
 
     if (client.input === "north" && tileIndexPlayerIsOn - 5 >= 0) {
-      player.positionRow--;
+      if (
+        games[gameIndex].worldMap[tileIndexPlayerIsOn - 5].identifier ===
+        "emptyroom"
+      ) {
+        player.positionRow--;
+      }
     }
     if (client.input === "west" && tileIndexPlayerIsOn - 1 >= 0) {
-      player.positionCol--;
+      if (
+        games[gameIndex].worldMap[tileIndexPlayerIsOn - 1].identifier ===
+        "emptyroom"
+      ) {
+        player.positionCol--;
+      }
     }
-    if (client.input === "east" && tileIndexPlayerIsOn + 1 < games[gameIndex].worldMap.length) {
-      player.positionCol++;
+    if (
+      client.input === "east" &&
+      tileIndexPlayerIsOn + 1 < games[gameIndex].worldMap.length
+    ) {
+      if (
+        games[gameIndex].worldMap[tileIndexPlayerIsOn + 1].identifier ===
+        "emptyroom"
+      ) {
+        player.positionCol++;
+      }
     }
-    if (client.input === "south" && tileIndexPlayerIsOn + 5 < games[gameIndex].worldMap.length) {
-      player.positionRow++;
+    if (
+      client.input === "south" &&
+      tileIndexPlayerIsOn + 5 < games[gameIndex].worldMap.length
+    ) {
+      if (
+        games[gameIndex].worldMap[tileIndexPlayerIsOn + 5].identifier ===
+        "emptyroom"
+      ) {
+        player.positionRow++;
+      }
     }
 
-    console.log (player.positionCol + ", " + player.positionRow);
+    console.log(player.positionCol + ", " + player.positionRow);
 
     games[client.gameIndex].CLIENTS[
       returnIndexFromUniqueIdentifier(client, client.gameIndex)
@@ -956,8 +982,7 @@ function updateInput() {
         }
       });
 
-      serverLogic (index);
-
+      serverLogic(index);
     } else {
       wss.clients.forEach(client => {
         if (
