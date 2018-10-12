@@ -347,7 +347,6 @@ let gameData = {
     "Gertrude",
     "Stanley",
     "Stuart",
-    "Pope Frank",
     "Yoda",
     "Rey",
     "Grendel",
@@ -355,13 +354,9 @@ let gameData = {
     "Frodo",
     "Dawn of the Round Trees",
     "Mrs. Frizzle",
-    "Richard Milhouse Nixon",
     "Henry VIII",
     "Napoleon",
     "Franco",
-    "Abraham Lincoln",
-    "Huey Long",
-    "Neville Chamberlain",
     "Zelda",
     "Peach",
     "Mayro",
@@ -380,24 +375,16 @@ let gameData = {
     "Gary Oak",
     "Indiana Jones",
     "Ruff Ruffman",
-    "Ronald Drumpf",
     "Spock",
     "Dumbledore",
-    "Bill Gates",
     "Sir Sconius",
     "Thomas Testingham Trousers III",
     "Elmo",
     "Furby",
     "Spongebob",
-    "Vladimir Putin",
-    "Kim jong un",
-    "Barack Obama",
-    "Bill Clinton",
-    "Hillary Clinton",
     "Pikachu",
     "Curious George",
-    "Plankton",
-    "George Washington"
+    "Plankton"
   ],
 
   positiveTraits: [
@@ -822,6 +809,7 @@ wss.on("connection", function connection(ws, req) {
     let message = JSON.parse(event.data);
     console.log(message.gameIndex + " gameIndex - message " + message);
     games[message.gameIndex].CLIENTS[message.playerIndex].hasSentInput = true;
+    games[message.gameIndex].CLIENTS[message.playerIndex].input = message.input;
   };
 
   if (noGamesAreAvailable()) {
@@ -832,6 +820,10 @@ wss.on("connection", function connection(ws, req) {
     games[games.length - 1].CLIENTS[
       games[games.length - 1].CLIENTS.length - 1
     ].hasSentInput = false;
+
+    games[games.length - 1].CLIENTS[
+      games[games.length - 1].CLIENTS.length - 1
+    ].input = "none";
 
     wss.clients.forEach(client => {
       let message = {
@@ -857,6 +849,14 @@ wss.on("connection", function connection(ws, req) {
     games[games.length - 1].players.push(player);
     games[games.length - 1].CLIENTS.push(ws);
 
+    games[games.length - 1].CLIENTS[
+      games[games.length - 1].CLIENTS.length - 1
+    ].hasSentInput = false;
+
+    games[games.length - 1].CLIENTS[
+      games[games.length - 1].CLIENTS.length - 1
+    ].input = "none";
+
     console.log(
       player.name +
         " the " +
@@ -867,10 +867,12 @@ wss.on("connection", function connection(ws, req) {
         (games.length - 1)
     );
 
-    if (games [games.length - 1].players.length === 1) {
-
-      generateFloor (games [games.length - 1], 1, Math.floor (Math.random () * 500));
-
+    if (games[games.length - 1].players.length === 1) {
+      generateFloor(
+        games[games.length - 1],
+        1,
+        Math.floor(Math.random() * 500)
+      );
     }
 
     let message = {
@@ -899,6 +901,39 @@ wss.on("connection", function connection(ws, req) {
   });
 });
 
+function serverLogic(gameIndex) {
+  games[gameIndex].CLIENTS.forEach(client => {
+    let player =
+      games[gameIndex].players[
+        returnIndexFromUniqueIdentifier(client, client.gameIndex)
+      ];
+
+    let tileIndexPlayerIsOn = player.positionCol + player.positionRow * 5;
+
+    if (client.input === "north" && tileIndexPlayerIsOn - 5 >= 0) {
+      player.positionRow--;
+    }
+    if (client.input === "west" && tileIndexPlayerIsOn - 1 >= 0) {
+      player.positionCol--;
+    }
+    if (client.input === "east" && tileIndexPlayerIsOn + 1 >= 0) {
+      player.positionCol++;
+    }
+    if (client.input === "south" && tileIndexPlayerIsOn + 5 >= 0) {
+      player.positionRow++;
+    }
+
+    console.log (player.positionCol + ", " + player.positionRow);
+
+    games[client.gameIndex].CLIENTS[
+      returnIndexFromUniqueIdentifier(client, client.gameIndex)
+    ].hasSentInput = false;
+    games[client.gameIndex].CLIENTS[
+      returnIndexFromUniqueIdentifier(client, client.gameIndex)
+    ].input = "none";
+  });
+}
+
 function updateInput() {
   let numberOfInputsLeft = 0;
 
@@ -918,11 +953,11 @@ function updateInput() {
 
         if (client.gameIndex === index) {
           client.send(JSON.stringify(message));
-          games[client.gameIndex].CLIENTS[
-            returnIndexFromUniqueIdentifier(client, client.gameIndex)
-          ].hasSentInput = false;
         }
       });
+
+      serverLogic (index);
+
     } else {
       wss.clients.forEach(client => {
         if (
@@ -979,42 +1014,58 @@ function broadcastPlayerSurroundings() {
 
     message += " To the west is ";
 
-    if (
-      worldData.worldMap[tileIndexPlayerIsOn - 1].identifier === "emptyroom"
-    ) {
-      message += "an empty room.";
+    if (tileIndexPlayerIsOn - 1 >= 0) {
+      if (
+        worldData.worldMap[tileIndexPlayerIsOn - 1].identifier === "emptyroom"
+      ) {
+        message += "an empty room.";
+      } else {
+        message += "a stone wall.";
+      }
     } else {
-      message += "a stone wall.";
+      message += "a rock wall.";
     }
 
     message += " To the east is ";
 
-    if (
-      worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
-    ) {
-      message += "an empty room.";
+    if (tileIndexPlayerIsOn + 1 < worldData.worldMap.length) {
+      if (
+        worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
+      ) {
+        message += "an empty room.";
+      } else {
+        message += "a stone wall.";
+      }
     } else {
-      message += "a stone wall.";
+      message += "a rock wall.";
     }
 
     message += " To the north is ";
 
-    if (
-      worldData.worldMap[tileIndexPlayerIsOn - 5].identifier === "emptyroom"
-    ) {
-      message += "an empty room.";
+    if (tileIndexPlayerIsOn - 5 >= 0) {
+      if (
+        worldData.worldMap[tileIndexPlayerIsOn - 5].identifier === "emptyroom"
+      ) {
+        message += "an empty room.";
+      } else {
+        message += "a stone wall.";
+      }
     } else {
-      message += "a stone wall.";
+      message += "a rock wall.";
     }
 
     message += " To the south is ";
 
-    if (
-      worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
-    ) {
-      message += "an empty room.";
+    if (tileIndexPlayerIsOn + 5 < worldMap.worldData.length) {
+      if (
+        worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
+      ) {
+        message += "an empty room.";
+      } else {
+        message += "a stone wall.";
+      }
     } else {
-      message += "a stone wall.";
+      message += "a rock wall.";
     }
 
     let serverMessage = {
@@ -1022,7 +1073,7 @@ function broadcastPlayerSurroundings() {
       text: message
     };
 
-    client.send(JSON.stringify (serverMessage));
+    client.send(JSON.stringify(serverMessage));
   });
 }
 
