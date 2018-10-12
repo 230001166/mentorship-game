@@ -916,10 +916,10 @@ function serverLogic(gameIndex) {
     if (client.input === "west" && tileIndexPlayerIsOn - 1 >= 0) {
       player.positionCol--;
     }
-    if (client.input === "east" && tileIndexPlayerIsOn + 1 >= 0) {
+    if (client.input === "east" && tileIndexPlayerIsOn + 1 < games[gameIndex].worldMap.length) {
       player.positionCol++;
     }
-    if (client.input === "south" && tileIndexPlayerIsOn + 5 >= 0) {
+    if (client.input === "south" && tileIndexPlayerIsOn + 5 < games[gameIndex].worldMap.length) {
       player.positionRow++;
     }
 
@@ -1056,7 +1056,7 @@ function broadcastPlayerSurroundings() {
 
     message += " To the south is ";
 
-    if (tileIndexPlayerIsOn + 5 < worldMap.worldData.length) {
+    if (tileIndexPlayerIsOn + 5 < worldData.worldMap.length) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
       ) {
