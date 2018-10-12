@@ -998,6 +998,18 @@ function updateInput() {
           if (client.gameIndex === index) {
             client.send(JSON.stringify(message));
           }
+        } else {
+
+
+          let message = {
+            messageType: "SERVERMESSAGE",
+            text: "Nothing is happening at the moment."
+          };
+
+          if (client.gameIndex === index) {
+            client.send(JSON.stringify(message));
+          }
+
         }
       });
     }
@@ -1039,7 +1051,9 @@ function broadcastPlayerSurroundings() {
 
     message += " To the west is ";
 
-    if (tileIndexPlayerIsOn - 1 >= 0) {
+    let mapWidth = Math.sqrt (worldData.worldMap.length);
+
+    if (tileIndexPlayerIsOn - 1 >= 0 && player.positionCol > 0) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn - 1].identifier === "emptyroom"
       ) {
@@ -1053,7 +1067,7 @@ function broadcastPlayerSurroundings() {
 
     message += " To the east is ";
 
-    if (tileIndexPlayerIsOn + 1 < worldData.worldMap.length) {
+    if (tileIndexPlayerIsOn + 1 < worldData.worldMap.length && player.positionCol + 1 < mapWidth) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
       ) {
@@ -1067,7 +1081,7 @@ function broadcastPlayerSurroundings() {
 
     message += " To the north is ";
 
-    if (tileIndexPlayerIsOn - 5 >= 0) {
+    if (tileIndexPlayerIsOn - 5 >= 0 && player.positionRow > 0) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn - 5].identifier === "emptyroom"
       ) {
@@ -1081,7 +1095,7 @@ function broadcastPlayerSurroundings() {
 
     message += " To the south is ";
 
-    if (tileIndexPlayerIsOn + 5 < worldData.worldMap.length) {
+    if (tileIndexPlayerIsOn + 5 < worldData.worldMap.length  && player.positionRow + 1 < mapWidth) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
       ) {
