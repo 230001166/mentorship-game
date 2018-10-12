@@ -331,6 +331,8 @@ function generateItems(worldData, floorNumber) {
       }
     }
 
+    console.log (newItem.name + " - @ " + newItem.position % 5 + ", " + newItem.position / 5);
+
     worldData.worldItems.push(newItem);
   }
 }
