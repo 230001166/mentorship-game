@@ -291,6 +291,50 @@ function generateFloor(worldData, floorLevel, seed) {
   }
 }
 
+function createItemFromIndex(index) {
+  let item = gameData.gameItems[index];
+
+  return item;
+}
+
+function generateItems(worldData, floorNumber) {
+  let numberOfItems = Math.floor(Math.random() * 3) + 1;
+
+  for (let i = 0; i < numberOfItems; i++) {
+    let itemIsValid = false,
+      index = 0;
+
+    while (!itemIsValid) {
+      let itemIndex = Math.floor(Math.random() * gameData.gameItems.length);
+
+      if (
+        floorNumber >= gameData.gameItems[itemIndex].minimumfloor &&
+        floorNumber <= gameData.gameItems[itemIndex].maximumfloor
+      ) {
+        itemIsValid = true;
+        index = itemIndex;
+      }
+    }
+
+    let newItem = createItemFromIndex(index);
+    let positionIsValid = false;
+
+    while (!positionIsValid) {
+      let position = Math.floor(Math.random() * worldData.worldMap.length);
+
+      if (position >= 0 && position < worldData.worldMap.length) {
+        if (worldData.worldMap[position].identifier === "emptyroom") {
+          positionIsValid = true;
+
+          newItem.position = position;
+        }
+      }
+    }
+
+    worldData.worldItems.push(newItem);
+  }
+}
+
 function generateWorld(worldData, numberOfPlayers, seed) {
   for (let i = 0; i < numberOfPlayers; i++) {
     let randomIndex = Math.floor(
@@ -315,6 +359,8 @@ function generateWorld(worldData, numberOfPlayers, seed) {
   }
 
   generateFloor(worldData, 1, seed);
+
+  generateItems(worldData, 1);
 }
 
 function createGame() {
@@ -951,6 +997,13 @@ function serverLogic(gameIndex) {
 
     console.log(player.positionCol + ", " + player.positionRow);
 
+    games[client.gameIndex].worldItems.forEach(item => {
+      if (item.position === tileIndexPlayerIsOn) {
+        player.name += " has found ";
+        player.name += item.name;
+      }
+    });
+
     games[client.gameIndex].CLIENTS[
       returnIndexFromUniqueIdentifier(client, client.gameIndex)
     ].hasSentInput = false;
@@ -999,8 +1052,6 @@ function updateInput() {
             client.send(JSON.stringify(message));
           }
         } else {
-
-
           let message = {
             messageType: "SERVERMESSAGE",
             text: "Nothing is happening at the moment."
@@ -1009,7 +1060,6 @@ function updateInput() {
           if (client.gameIndex === index) {
             client.send(JSON.stringify(message));
           }
-
         }
       });
     }
@@ -1051,7 +1101,7 @@ function broadcastPlayerSurroundings() {
 
     message += " To the west is ";
 
-    let mapWidth = Math.sqrt (worldData.worldMap.length);
+    let mapWidth = Math.sqrt(worldData.worldMap.length);
 
     if (tileIndexPlayerIsOn - 1 >= 0 && player.positionCol > 0) {
       if (
@@ -1067,7 +1117,10 @@ function broadcastPlayerSurroundings() {
 
     message += " To the east is ";
 
-    if (tileIndexPlayerIsOn + 1 < worldData.worldMap.length && player.positionCol + 1 < mapWidth) {
+    if (
+      tileIndexPlayerIsOn + 1 < worldData.worldMap.length &&
+      player.positionCol + 1 < mapWidth
+    ) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn + 1].identifier === "emptyroom"
       ) {
@@ -1095,7 +1148,10 @@ function broadcastPlayerSurroundings() {
 
     message += " To the south is ";
 
-    if (tileIndexPlayerIsOn + 5 < worldData.worldMap.length  && player.positionRow + 1 < mapWidth) {
+    if (
+      tileIndexPlayerIsOn + 5 < worldData.worldMap.length &&
+      player.positionRow + 1 < mapWidth
+    ) {
       if (
         worldData.worldMap[tileIndexPlayerIsOn + 5].identifier === "emptyroom"
       ) {
