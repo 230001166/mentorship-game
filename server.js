@@ -298,7 +298,8 @@ function createItemFromIndex(index) {
 }
 
 function generateItems(worldData, floorNumber) {
-  let numberOfItems = Math.floor(Math.random() * 3) + 1; console.log (numberOfItems);
+  let numberOfItems = Math.floor(Math.random() * 3) + 1;
+  console.log(numberOfItems);
 
   for (let i = 0; i < numberOfItems; i++) {
     let itemIsValid = false,
@@ -331,7 +332,13 @@ function generateItems(worldData, floorNumber) {
       }
     }
 
-    console.log (newItem.name + " - @ " + newItem.position % 5 + ", " + newItem.position / 5);
+    console.log(
+      newItem.name +
+        " - @ " +
+        (newItem.position % 5) +
+        ", " +
+        newItem.position / 5
+    );
 
     worldData.worldItems.push(newItem);
   }
@@ -949,6 +956,15 @@ wss.on("connection", function connection(ws, req) {
   });
 });
 
+function sendServerMessage(client, messageType, messageName) {
+  let message = {
+    messageType: messageType,
+    text: messageName
+  };
+
+  client.send(JSON.stringify(message));
+}
+
 function serverLogic(gameIndex) {
   games[gameIndex].CLIENTS.forEach(client => {
     let player =
@@ -1027,13 +1043,10 @@ function updateInput() {
 
     if (numberOfInputsLeft === 0) {
       wss.clients.forEach(client => {
-        let message = {
-          messageType: "SERVERMESSAGE",
-          text: "All players did an input!"
-        };
 
         if (client.gameIndex === index) {
-          client.send(JSON.stringify(message));
+          
+          sendServerMessage (client, "SERVERMESSAGE", "All players did an input!");
         }
       });
 
@@ -1045,22 +1058,15 @@ function updateInput() {
             returnIndexFromUniqueIdentifier(client, client.gameIndex)
           ].hasSentInput
         ) {
-          let message = {
-            messageType: "SERVERMESSAGE",
-            text: "Awaiting other players' input..."
-          };
 
           if (client.gameIndex === index) {
-            client.send(JSON.stringify(message));
+            sendServerMessage (client, "SERVERMESSAGE", "Awaiting other players' input...");
+
           }
         } else {
-          let message = {
-            messageType: "SERVERMESSAGE",
-            text: "Nothing is happening at the moment."
-          };
 
           if (client.gameIndex === index) {
-            client.send(JSON.stringify(message));
+            sendServerMessage (client, "SERVERMESSAGE", "Nothing is happening at the moment.");
           }
         }
       });
