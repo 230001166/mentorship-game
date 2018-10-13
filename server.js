@@ -417,7 +417,6 @@ let gameData = {
     "Mayro",
     "Luigi",
     "Alexander",
-    "Bad Hombre",
     "Batman",
     "JC Denton",
     "Walton Simons",
