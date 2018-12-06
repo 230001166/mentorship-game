@@ -894,7 +894,7 @@ wss.on("connection", function connection(ws, req) {
         messageType: "NAME",
         name: games[newGameIndex].players[0].name,
         playerIndex: 0,
-        gameIndex: ws.gameIndex
+        playerGameIndex: ws.gameIndex
       };
 
       client.send(JSON.stringify(message));
