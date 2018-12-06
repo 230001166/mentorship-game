@@ -299,7 +299,7 @@ function createItemFromIndex(index) {
 
 function generateItems(worldData, floorNumber) {
   let numberOfItems = Math.floor(Math.random() * 3) + 1;
-  console.log(numberOfItems);
+  console.log(numberOfItems + " items");
 
   for (let i = 0; i < numberOfItems; i++) {
     let itemIsValid = false,
