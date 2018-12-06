@@ -42,7 +42,8 @@ function createPlayer(
     experience: 0,
     level: 1,
     positionRow,
-    positionCol
+    positionCol,
+    items: []
   };
 }
 
@@ -298,7 +299,7 @@ function createItemFromIndex(index) {
 }
 
 function generateItems(worldData, floorNumber) {
-  let numberOfItems = Math.floor(Math.random() * 3) + 1;
+  let numberOfItems = Math.floor(Math.random() * 5) + 1;
   console.log(numberOfItems + " items");
 
   for (let i = 0; i < numberOfItems; i++) {
@@ -337,7 +338,7 @@ function generateItems(worldData, floorNumber) {
         " - @ " +
         (newItem.position % 5) +
         ", " +
-        newItem.position / 5
+        Math.round(newItem.position / 5)
     );
 
     worldData.worldItems.push(newItem);
@@ -856,6 +857,14 @@ function noGamesAreAvailable() {
   return true;
 }
 
+function returnFirstAvailableGameIndex() {
+  for (let i = 0; i < games.length; i++) {
+    if (!gameIsFull(i)) {
+      return i;
+    }
+  }
+}
+
 wss.on("connection", function connection(ws, req) {
   ws.uniqueIdentifier = Math.floor(Math.random() * Math.floor(1000000));
 
@@ -868,21 +877,22 @@ wss.on("connection", function connection(ws, req) {
 
   if (noGamesAreAvailable()) {
     createGame();
-    console.log("Created game " + games.length - 1 + "!");
-    ws.gameIndex = games.length - 1;
-    games[games.length - 1].CLIENTS.push(ws);
-    games[games.length - 1].CLIENTS[
-      games[games.length - 1].CLIENTS.length - 1
+
+    let newGameIndex = games.length - 1;
+    console.log("Created game " + newGameIndex + "!");
+    ws.gameIndex = newGameIndex;
+    games[newGameIndex].CLIENTS.push(ws);
+    games[newGameIndex].CLIENTS[
+      games[newGameIndex].CLIENTS.length - 1
     ].hasSentInput = false;
 
-    games[games.length - 1].CLIENTS[
-      games[games.length - 1].CLIENTS.length - 1
-    ].input = "none";
+    games[newGameIndex].CLIENTS[games[newGameIndex].CLIENTS.length - 1].input =
+      "none";
 
     wss.clients.forEach(client => {
       let message = {
         messageType: "NAME",
-        name: games[games.length - 1].players[0].name,
+        name: games[newGameIndex].players[0].name,
         playerIndex: 0,
         gameIndex: ws.gameIndex
       };
@@ -899,17 +909,17 @@ wss.on("connection", function connection(ws, req) {
 
     assignPlayerTraits(player);
 
-    ws.gameIndex = games.length - 1;
-    games[games.length - 1].players.push(player);
-    games[games.length - 1].CLIENTS.push(ws);
+    let gameIndex = returnFirstAvailableGameIndex();
+    ws.gameIndex = gameIndex;
+    games[gameIndex].players.push(player);
+    games[gameIndex].CLIENTS.push(ws);
 
-    games[games.length - 1].CLIENTS[
-      games[games.length - 1].CLIENTS.length - 1
+    games[gameIndex].CLIENTS[
+      games[gameIndex].CLIENTS.length - 1
     ].hasSentInput = false;
 
-    games[games.length - 1].CLIENTS[
-      games[games.length - 1].CLIENTS.length - 1
-    ].input = "none";
+    games[gameIndex].CLIENTS[games[gameIndex].CLIENTS.length - 1].input =
+      "none";
 
     console.log(
       player.name +
@@ -918,25 +928,18 @@ wss.on("connection", function connection(ws, req) {
         " yet " +
         player.positiveTrait.name +
         "has joined game " +
-        (games.length - 1)
+        gameIndex
     );
 
-    if (games[games.length - 1].players.length === 1) {
-      generateFloor(
-        games[games.length - 1],
-        1,
-        Math.floor(Math.random() * 500)
-      );
+    if (games[gameIndex].players.length === 1) {
+      generateFloor(games[gameIndex], 1, Math.floor(Math.random() * 500));
     }
 
     let message = {
       messageType: "NAME",
-      name:
-        games[games.length - 1].players[
-          games[games.length - 1].players.length - 1
-        ].name,
-      playerIndex: games[games.length - 1].players.length - 1,
-      gameIndex: games.length - 1
+      name: games[gameIndex].players[games[gameIndex].players.length - 1].name,
+      playerIndex: games[gameIndex].players.length - 1,
+      playerGameIndex: gameIndex
     };
 
     ws.send(JSON.stringify(message));
@@ -962,6 +965,18 @@ function sendServerMessage(client, messageType, messageName) {
   };
 
   client.send(JSON.stringify(message));
+}
+
+function cleanupFoundItems (client) {
+
+  for (let i = games[client.gameIndex].worldItems.length - 1; i >= 0; i--) {
+
+    if (games[client.gameIndex].worldItems [i].hasBeenFound) {
+      games[client.gameIndex].worldItems.splice(i, 1);
+      i--;
+    }
+  }  
+
 }
 
 function serverLogic(gameIndex) {
@@ -1016,10 +1031,18 @@ function serverLogic(gameIndex) {
 
     games[client.gameIndex].worldItems.forEach(item => {
       if (item.position === tileIndexPlayerIsOn) {
-        player.name += " has found ";
-        player.name += item.name;
+        sendServerMessage(
+          client,
+          "SERVERMESSAGE",
+          player.name + " has found " + item.name
+        );
+        player.items.push(item);
+
+        item.hasBeenFound = true;
       }
     });
+
+    cleanupFoundItems (client);
 
     games[client.gameIndex].CLIENTS[
       returnIndexFromUniqueIdentifier(client, client.gameIndex)
@@ -1042,10 +1065,12 @@ function updateInput() {
 
     if (numberOfInputsLeft === 0) {
       wss.clients.forEach(client => {
-
         if (client.gameIndex === index) {
-          
-          sendServerMessage (client, "SERVERMESSAGE", "All players did an input!");
+          sendServerMessage(
+            client,
+            "SERVERMESSAGE",
+            "All players did an input!"
+          );
         }
       });
 
@@ -1057,15 +1082,20 @@ function updateInput() {
             returnIndexFromUniqueIdentifier(client, client.gameIndex)
           ].hasSentInput
         ) {
-
           if (client.gameIndex === index) {
-            sendServerMessage (client, "SERVERMESSAGE", "Awaiting other players' input...");
-
+            sendServerMessage(
+              client,
+              "SERVERMESSAGE",
+              "Awaiting other players' input..."
+            );
           }
         } else {
-
           if (client.gameIndex === index) {
-            sendServerMessage (client, "SERVERMESSAGE", "Nothing is happening at the moment.");
+            sendServerMessage(
+              client,
+              "SERVERMESSAGE",
+              "Nothing is happening at the moment."
+            );
           }
         }
       });
