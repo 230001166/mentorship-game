@@ -29,6 +29,7 @@
     var el = document.getElementById('server-time');
     let playerIndex = 0
     let gameIndex = 0;
+    let serverMessages = [];
     ws.onmessage = function (event) {
 
       let message = JSON.parse(event.data);
@@ -36,6 +37,16 @@
       if (message.messageType === "SERVERMESSAGE") {
 
         el.innerHTML = message.text;
+
+        let serverString = message.date + " - " + message.text;
+
+        serverMessages.push (serverString);
+
+        if (serverMessages.length > 10) {
+
+          serverMessages.shift ();
+
+        }
 
       } else if (message.messageType === "NAME") {
 
@@ -75,6 +86,20 @@
       };
 
       ws.send(JSON.stringify(message));
+
+    }
+
+    function displayRecentServerMessages () {
+
+      let messageString = "RECENT SERVER MESSAGES:\n";
+
+      for (let i = 0; i < serverMessages.length; i++) {
+
+        messageString += serverMessages [i]; messageString += "\n";
+
+      }
+
+      alert (messageString);
 
     }
   </script>

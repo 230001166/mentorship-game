@@ -959,9 +959,12 @@ wss.on("connection", function connection(ws, req) {
 });
 
 function sendServerMessage(client, messageType, messageName) {
+
+  let date = new Date ();
   let message = {
     messageType: messageType,
-    text: messageName
+    text: messageName,
+    date: date.toString ()
   };
 
   client.send(JSON.stringify(message));
