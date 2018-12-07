@@ -945,7 +945,7 @@ wss.on("connection", function connection(ws, req) {
             gameIndex
           );
         }
-      }
+      });
 
     if (games[gameIndex].players.length === 1) {
       generateFloor(games[gameIndex], 1, Math.floor(Math.random() * 500));
