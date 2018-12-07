@@ -23,6 +23,7 @@
   <button onclick="sendInput('west')">Move west</button>
   <button onclick="sendInput('east')">Move east</button>
   <button onclick="sendInput('south')">Move south</button>
+  <button onclick="displayRecentServerMessages()">View recent server messages</button>
   <script>
     var HOST = location.origin.replace(/^http/, 'ws')
     var ws = new WebSocket(HOST);
