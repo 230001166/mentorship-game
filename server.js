@@ -931,6 +931,22 @@ wss.on("connection", function connection(ws, req) {
         gameIndex
     );
 
+    wss.clients.forEach(client => {
+        if (client.gameIndex === gameIndex) {
+          sendServerMessage(
+            client,
+            "SERVERMESSAGE",
+            player.name +
+            " the " +
+            player.negativeTrait.name +
+            " yet " +
+            player.positiveTrait.name +
+            "has joined game " +
+            gameIndex
+          );
+        }
+      }
+
     if (games[gameIndex].players.length === 1) {
       generateFloor(games[gameIndex], 1, Math.floor(Math.random() * 500));
     }
