@@ -948,6 +948,10 @@ wss.on("connection", function connection(ws, req) {
 
     if (games[gameIndex].players.length === 1) {
       generateFloor(games[gameIndex], 1, Math.floor(Math.random() * 500));
+    }
+
+    if (games[gameIndex].worldItems.length === 0) {
+      console.log("No items in game " + gameIndex + "! Generating items..");
       generateItems(games[gameIndex], 1);
     }
 
