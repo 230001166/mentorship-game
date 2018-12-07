@@ -932,23 +932,23 @@ wss.on("connection", function connection(ws, req) {
     );
 
     wss.clients.forEach(client => {
-        if (client.gameIndex === gameIndex) {
-          sendServerMessage(
-            client,
-            "SERVERMESSAGE",
-            player.name +
+      if (client.gameIndex === gameIndex) {
+        sendServerMessage(
+          client,
+          "SERVERMESSAGE",
+          player.name +
             " the " +
             player.negativeTrait.name +
             " yet " +
             player.positiveTrait.name +
-            "has joined game " +
-            gameIndex
-          );
-        }
-      });
+            " has joined the game."
+        );
+      }
+    });
 
     if (games[gameIndex].players.length === 1) {
       generateFloor(games[gameIndex], 1, Math.floor(Math.random() * 500));
+      generateItems(games[gameIndex], 1);
     }
 
     let message = {
@@ -975,9 +975,9 @@ wss.on("connection", function connection(ws, req) {
 });
 
 function sendServerMessage(client, messageType, messageName) {
-
-  let date = new Date ();
-  let dateString = date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
+  let date = new Date();
+  let dateString =
+    date.getHours() + ":" + date.getMinutes() + ":" + date.getSeconds();
   let message = {
     messageType: messageType,
     text: messageName,
@@ -987,16 +987,13 @@ function sendServerMessage(client, messageType, messageName) {
   client.send(JSON.stringify(message));
 }
 
-function cleanupFoundItems (client) {
-
+function cleanupFoundItems(client) {
   for (let i = games[client.gameIndex].worldItems.length - 1; i >= 0; i--) {
-
-    if (games[client.gameIndex].worldItems [i].hasBeenFound) {
+    if (games[client.gameIndex].worldItems[i].hasBeenFound) {
       games[client.gameIndex].worldItems.splice(i, 1);
       i--;
     }
-  }  
-
+  }
 }
 
 function serverLogic(gameIndex) {
@@ -1062,7 +1059,7 @@ function serverLogic(gameIndex) {
       }
     });
 
-    cleanupFoundItems (client);
+    cleanupFoundItems(client);
 
     games[client.gameIndex].CLIENTS[
       returnIndexFromUniqueIdentifier(client, client.gameIndex)
