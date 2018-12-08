@@ -1140,6 +1140,26 @@ function broadcastPlayerData() {
   });
 }
 
+function broadcastPlayerInventory() {
+
+  wss.clients.forEach((client, index) => {
+
+    let playerIndex = returnIndexFromUniqueIdentifier(client, client.gameIndex);
+    let itemList = [];
+
+    games[client.gameIndex].players[playerIndex].items.forEach(item => {
+      itemList.push (item);
+    });
+    let message = {
+      messageType: "INVENTORY",
+      items: itemList
+    };
+
+    client.send(JSON.stringify(message));
+  });
+
+}
+
 function broadcastPlayerSurroundings() {
   wss.clients.forEach(client => {
     let message = "You are standing in ";
@@ -1236,4 +1256,6 @@ setInterval(() => {
   broadcastPlayerData();
 
   broadcastPlayerSurroundings();
+
+  broadcastPlayerInventory();
 }, 1000);

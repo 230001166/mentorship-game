@@ -36,6 +36,7 @@
     <button onclick="displayRecentServerMessages()">
       View recent server messages
     </button>
+    <button onclick="showInventory()">View inventory</button>
     <script>
       var HOST = location.origin.replace(/^http/, "ws");
       var ws = new WebSocket(HOST);
@@ -43,6 +44,7 @@
       let playerIndex = 0;
       let gameIndex = 0;
       let serverMessages = [];
+      let playerItemNames = [];
       ws.onmessage = function(event) {
         let message = JSON.parse(event.data);
 
@@ -87,6 +89,11 @@
           let consoleP = document.getElementById("console");
 
           consoleP.innerHTML = message.text;
+        } else if (message.messageType === "INVENTORY") {
+          playerItemNames = [];
+          message.items.forEach(item => {
+            playerItemNames.push (item);
+          });
         }
       };
 
@@ -105,6 +112,16 @@
 
         for (let i = serverMessages.length-1; i >= 0; i--) {
           messageString += serverMessages[i];
+          messageString += "\n";
+        }
+
+        alert(messageString);
+      }
+      function showInventory() {
+        let messageString = "INVENTORY:\n";
+
+        for (let i = 0; i < playerItemNames.length; i++) {
+          messageString += playerItemNames[i];
           messageString += "\n";
         }
 
